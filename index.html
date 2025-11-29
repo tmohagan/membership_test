@@ -3,621 +3,486 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tim O'Hagan's Upsell Trainer</title>
-    <!-- Tailwind CSS -->
+    <title>BJ's Member Experience Training</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .fade-in { animation: fadeIn 0.5s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
         
-        /* CRT Effect for MARS Screen */
-        .mars-screen {
-            background: #1e293b;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-            font-family: 'Courier New', monospace;
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f3f4f6;
         }
+
+        .bjs-red { background-color: #CF0A2C; }
+        .bjs-red-text { color: #CF0A2C; }
+        .bjs-dark { background-color: #1a1a1a; }
+        
+        .card-flip {
+            perspective: 1000px;
+        }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card-flip:hover .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* POS Screen Styles */
+        .pos-screen {
+            background-color: #e5e7eb;
+            border: 4px solid #374151;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .pos-btn {
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+        }
+        .pos-btn:active {
+            box-shadow: inset 2px 2px 0px rgba(0,0,0,0.2);
+            transform: translateY(2px);
+        }
+
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
-<body class="bg-slate-50">
-    <div id="root"></div>
+<body class="min-h-screen flex flex-col">
 
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
-
-        // --- Icons ---
-        const Icon = ({ path, className, size = 24 }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{path}</svg>
-        );
-        const Icons = {
-            MessageCircle: (props) => <Icon path={<><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></>} {...props} />,
-            User: (props) => <Icon path={<><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></>} {...props} />,
-            CheckCircle: (props) => <Icon path={<><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></>} {...props} />,
-            XCircle: (props) => <Icon path={<><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></>} {...props} />,
-            ArrowRight: (props) => <Icon path={<><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></>} {...props} />,
-            Target: (props) => <Icon path={<><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></>} {...props} />,
-            Zap: (props) => <Icon path={<><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></>} {...props} />,
-            RefreshCw: (props) => <Icon path={<><path d="M21 2v6h-6" /><path d="M3 12a9 9 0 0 1 15-6.7L21 8" /><path d="M3 22v-6h6" /><path d="M21 12a9 9 0 0 1-15 6.7L3 16" /></>} {...props} />,
-            CreditCard: (props) => <Icon path={<><rect width="20" height="14" x="2" y="5" rx="2" /><line x1="2" x2="22" y1="10" y2="10" /></>} {...props} />,
-            Fuel: (props) => <Icon path={<><path d="M3 22v-8a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v8" /><path d="M11 22h-8" /><path d="M14 22v-8a2 2 0 0 0-2-2h-1" /><path d="M14 13a2 2 0 1 0 4 0v-3a2 2 0 0 0-2-2h-2" /><path d="M14 8h-1" /></>} {...props} />,
-            TrendingUp: (props) => <Icon path={<><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></>} {...props} />,
-            Eye: (props) => <Icon path={<><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></>} {...props} />
-        };
-
-        const App = () => {
-            // Game State
-            const [view, setView] = useState('intro'); // intro, scenario, summary
-            const [scenarioIdx, setScenarioIdx] = useState(0);
-            const [interactionStage, setInteractionStage] = useState('mars'); // mars, discovery, pitch, feedback
-            const [dialogueLog, setDialogueLog] = useState([]);
-            const [score, setScore] = useState(0);
-            const [feedback, setFeedback] = useState(null);
-            
-            // Ref for auto-scrolling chat
-            const chatEndRef = useRef(null);
-            const scrollToBottom = () => chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-            useEffect(scrollToBottom, [dialogueLog]);
-
-            // --- Scenarios Data ---
-            const scenarios = [
-                {
-                    id: 1,
-                    customer: "Sarah Jenkins",
-                    tier: "Club",
-                    context: "Picking up membership card.",
-                    avatar: "bg-blue-100 text-blue-600",
-                    marsData: {
-                        status: "Active",
-                        type: "Club Member",
-                        joined: "2019",
-                        creditCard: "N/A"
-                    },
-                    intro: "Hi, I'm just here to pick up my new card. I want to get in and out quickly.",
-                    hiddenNeed: "gas", 
-                    discoveryOptions: [
-                        {
-                            text: "Do you plan on using our Same-Day Delivery service often?",
-                            reveals: "delivery_rejection",
-                            response: "Honestly, no. I like to pick my own produce. I don't trust delivery drivers with my fruit!",
-                            hint: "She rejected delivery. Don't pitch it."
-                        },
-                        {
-                            text: "Welcome! Did you drive far to get to us today?",
-                            reveals: "gas_need",
-                            response: "About 20 minutes. I actually passed three other gas stations to get here—prices are crazy right now.",
-                            hint: "She cares about gas prices. Pivot to fuel savings."
-                        },
-                        {
-                            text: "Would you like to upgrade for $60 today?",
-                            reveals: "price_shock",
-                            response: "Whoa, I just paid for this membership. I'm not looking to spend more money.",
-                            hint: "Too direct. You triggered price resistance."
-                        }
-                    ],
-                    pitchOptions: [
-                        {
-                            targetNeed: "delivery",
-                            text: "You should get Club+. It includes 2 free Same-Day Deliveries worth $30, so it pays for itself.",
-                            result: "fail",
-                            feedback: "Missed the mark. Sarah explicitly said she doesn't use delivery. Pitching a benefit the customer doesn't value makes them feel unheard.",
-                            coachTip: "Always listen to the 'No'. If they reject delivery, pivot to Gas or Rewards immediately."
-                        },
-                        {
-                            targetNeed: "gas",
-                            text: "Since you're driving a bit to get here, moving to Club+ saves you 5¢/gal on gas instantly. Plus you'll earn 2% back on everything you buy today.",
-                            result: "success",
-                            feedback: "Perfect! You identified her pain point (gas prices/driving) and offered the specific solution (5¢ off/gal) plus the reward kicker.",
-                            coachTip: "Great connection! Distance driven = Gas Pitch. It's the most reliable formula."
-                        },
-                        {
-                            targetNeed: "generic",
-                            text: "Club+ is great because it has a 100% Money Back Guarantee.",
-                            result: "weak",
-                            feedback: "The guarantee is a safety net, not a hook. Lead with the Gas Savings first, then use the guarantee to close if she hesitates.",
-                            coachTip: "Use the Guarantee as a 'Closer', not an 'Opener'."
-                        }
-                    ]
-                },
-                {
-                    id: 2,
-                    customer: "Mike Ross",
-                    tier: "Club",
-                    context: "Buying a large TV at checkout.",
-                    avatar: "bg-green-100 text-green-600",
-                    marsData: {
-                        status: "Active",
-                        type: "Club Member",
-                        joined: "2021",
-                        creditCard: "None"
-                    },
-                    intro: "Just grabbing this TV today. Hopefully it fits in my car!",
-                    hiddenNeed: "rewards",
-                    discoveryOptions: [
-                        {
-                            text: "That's a nice TV! Are you using a BJ's credit card to pay for that?",
-                            reveals: "payment_method",
-                            response: "No, just my debit card. I don't like annual fees on credit cards.",
-                            hint: "He pays with debit and fears fees. Pitch the NO FEE aspect."
-                        },
-                        {
-                            text: "Do you want to apply for a Mastercard to save 10 cents on gas?",
-                            reveals: "gas_mild",
-                            response: "I guess? I don't buy gas that often though. My commute is short.",
-                            hint: "Gas isn't his trigger. Look for something related to his big purchase."
-                        }
-                    ],
-                    pitchOptions: [
-                        {
-                            targetNeed: "gas",
-                            text: "You should get the One Mastercard. You'll save 10 cents on gas every time you fill up.",
-                            result: "weak",
-                            feedback: "He told you he doesn't buy gas often. While true, this benefit isn't compelling enough to make him apply right now.",
-                            coachTip: "Relevance is key. Don't pitch gas to someone buying a TV unless they mention a long drive."
-                        },
-                        {
-                            targetNeed: "rewards",
-                            text: "If you open the One Mastercard today, you'll earn 3% back on this TV instantly. That's a significant reward, and the card has absolutely no annual fee.",
-                            result: "success",
-                            feedback: "Excellent. You connected the pitch to his current action (buying a TV), highlighted the 3% reward, and addressed his objection about fees.",
-                            coachTip: "Big Ticket Items = Instant Rewards Pitch. Always do the math for them."
-                        }
-                    ]
-                },
-                {
-                    id: 3,
-                    customer: "Linda Miles",
-                    tier: "Club+",
-                    context: "Customer Service Desk - Coupon Inquiry",
-                    avatar: "bg-purple-100 text-purple-600",
-                    marsData: {
-                        status: "Active",
-                        type: "Club+ Member",
-                        joined: "2015",
-                        creditCard: "None"
-                    },
-                    intro: "Hi, do you have any extra coupon books? I left mine at home.",
-                    hiddenNeed: "maximizer",
-                    discoveryOptions: [
-                        {
-                            text: "Here you go. Anything else?",
-                            reveals: "none",
-                            response: "Nope, that's it. Thanks.",
-                            hint: "You ended the interaction too early! Remember: 'Every interaction is an opportunity.'"
-                        },
-                        {
-                            text: "Here is a book! Since you clearly love deals, are you earning your max rewards with the One+ card yet?",
-                            reveals: "maximizer",
-                            response: "I have the Club+ membership for the 2% back, but I don't have the credit card. Is it worth it?",
-                            hint: "She is a 'Maximizer'. She likes deals/rewards. Pitch the multiplier."
-                        }
-                    ],
-                    pitchOptions: [
-                        {
-                            targetNeed: "delivery",
-                            text: "The One+ card gives you free delivery and pickup perks.",
-                            result: "fail",
-                            feedback: "She already has Club+, so she ALREADY has those perks. You need to offer NEW value (the 5% rewards).",
-                            coachTip: "Know what they already have. Pitching existing benefits confuses the member."
-                        },
-                        {
-                            targetNeed: "maximizer",
-                            text: "It absolutely is. Combined with your Club+, the One+ card more than doubles your rewards to 5% back and triples your gas savings to 15¢ off/gal.",
-                            result: "success",
-                            feedback: "Boom. You used the 'Double Rewards / Triple Gas' math from the training guide. High impact for a deal-seeking member.",
-                            coachTip: "Use 'Multipliers' (Double/Triple) for existing elite members. It sounds more impressive than just stating percentages."
-                        }
-                    ]
-                },
-                {
-                    id: 4,
-                    customer: "Gary Wilson",
-                    tier: "Club",
-                    context: "Complaining about gas prices at Service Desk.",
-                    avatar: "bg-slate-200 text-slate-600",
-                    marsData: {
-                        status: "Active",
-                        type: "Club Member",
-                        joined: "2020",
-                        creditCard: "N/A"
-                    },
-                    intro: "I can't believe gas went up another 20 cents. It's getting ridiculous.",
-                    hiddenNeed: "cost_savings",
-                    discoveryOptions: [
-                        {
-                            text: "I know, it's tough. Do you fill up here often?",
-                            reveals: "gas_focus",
-                            response: "Every week. It's the only reason I keep the membership.",
-                            hint: "He is price sensitive. Offer the maximum savings option."
-                        },
-                        {
-                            text: "Well, at least our prices are lower than the station across the street!",
-                            reveals: "agreement",
-                            response: "Barely.",
-                            hint: "Commiserating is okay, but you need to pivot to a solution."
-                        }
-                    ],
-                    pitchOptions: [
-                        {
-                            targetNeed: "club_plus",
-                            text: "You should upgrade to Club+. It saves you 5 cents a gallon.",
-                            result: "weak",
-                            feedback: "Good, but not the BEST. Club+ costs money ($60). The One Card is FREE and saves him double that (10 cents). Pitch the better value first.",
-                            coachTip: "For price complainers, 'Free' solutions (One Card) usually land better than 'Paid' upgrades (Club+)."
-                        },
-                        {
-                            targetNeed: "one_card",
-                            text: "If you switch to the BJ's One Mastercard, you'll save 10 cents a gallon instantly, and it has NO annual fee. It's the best way to fight these prices.",
-                            result: "success",
-                            feedback: "Excellent. You offered the 'No Additional Cost' solution that doubles his savings (10¢ vs standard). This addresses his complaint directly.",
-                            coachTip: "The 'No Annual Fee' + '10¢ Savings' combo is the ultimate silencer for gas price complaints."
-                        }
-                    ]
-                },
-                {
-                    id: 7, // New Pivot Scenario
-                    customer: "Karen Miller",
-                    tier: "Club",
-                    context: "Checkout - Credit Averse",
-                    avatar: "bg-red-100 text-red-600",
-                    marsData: {
-                        status: "Active",
-                        type: "Club Member",
-                        joined: "2010",
-                        creditCard: "None"
-                    },
-                    intro: "I'm just paying with cash today. I don't believe in credit cards.",
-                    hiddenNeed: "pivot_opportunity",
-                    discoveryOptions: [
-                        {
-                            text: "I understand. But our credit card gives you 3% back!",
-                            reveals: "anger",
-                            response: "I said I don't use them. I prefer to live debt free.",
-                            hint: "She is hostile to credit. Pivot immediately to Club+ (Debit/Cash friendly)."
-                        },
-                        {
-                            text: "That's smart! You can actually still earn rewards without a credit card. Have you looked at Club+?",
-                            reveals: "curiosity",
-                            response: "No, what is that? Is it a credit card?",
-                            hint: "Perfect pivot. You validated her stance and offered a non-credit alternative."
-                        }
-                    ],
-                    pitchOptions: [
-                        {
-                            targetNeed: "rewards_pivot",
-                            text: "Not at all. Club+ is just a membership upgrade. You keep paying with cash, but you start earning 2% back and get 5¢ off gas.",
-                            result: "success",
-                            feedback: "Textbook Pivot. You respected her boundary (No Credit) but still found an upsell (Club+) that fits her lifestyle.",
-                            coachTip: "The 'Anti-Credit' customer is the perfect candidate for Club+. Don't force the One Card."
-                        },
-                        {
-                            targetNeed: "one_card_push",
-                            text: "But the One Card has no annual fee and gives you 3% back. It's better than cash.",
-                            result: "fail",
-                            feedback: "You failed to listen. Pushing a credit card on someone who explicitly said 'I don't believe in them' destroys trust.",
-                            coachTip: "Never argue with a customer's philosophy. Pivot to an option that respects their values."
-                        }
-                    ]
-                }
-            ];
-
-            // --- Handlers ---
-            
-            const startScenario = () => {
-                setInteractionStage('mars');
-                setDialogueLog([]);
-                setFeedback(null);
-            };
-
-            const handleMarsSelection = (selectedTier) => {
-                const actualTier = scenarios[scenarioIdx].tier;
-                if (selectedTier === actualTier) {
-                    setInteractionStage('discovery');
-                    setDialogueLog([{ 
-                        speaker: 'customer', 
-                        text: scenarios[scenarioIdx].intro 
-                    }]);
-                } else {
-                    // Flash error or deduction (simplified here)
-                    alert(`Incorrect identification. The MARS data shows this member is: ${actualTier}. Look closely at the profile.`);
-                }
-            };
-
-            const handleDiscoveryChoice = (option) => {
-                // Add user question
-                const newLog = [...dialogueLog, { speaker: 'you', text: option.text }];
-                
-                // Add customer response (simulated delay for realism)
-                setTimeout(() => {
-                    setDialogueLog([
-                        ...newLog, 
-                        { speaker: 'customer', text: option.response, hint: option.hint }
-                    ]);
-                    setInteractionStage('pitch');
-                }, 600);
-            };
-
-            const handlePitchChoice = (option) => {
-                // Add user pitch
-                setDialogueLog(prev => [...prev, { speaker: 'you', text: option.text }]);
-                
-                // Determine result
-                if (option.result === 'success') {
-                    setScore(score + 100);
-                    setFeedback({ type: 'success', text: option.feedback, tip: option.coachTip });
-                } else if (option.result === 'weak') {
-                    setScore(score + 50);
-                    setFeedback({ type: 'warning', text: option.feedback, tip: option.coachTip });
-                } else {
-                    setFeedback({ type: 'error', text: option.feedback, tip: option.coachTip });
-                }
-                setInteractionStage('feedback');
-            };
-
-            const nextScenario = () => {
-                if (scenarioIdx < scenarios.length - 1) {
-                    setScenarioIdx(scenarioIdx + 1);
-                    startScenario();
-                } else {
-                    setView('summary');
-                }
-            };
-
-            // --- Components ---
-
-            const ChatBubble = ({ entry }) => (
-                <div className={`flex flex-col mb-4 ${entry.speaker === 'you' ? 'items-end' : 'items-start'} fade-in`}>
-                    <div className={`max-w-[80%] p-4 rounded-2xl shadow-sm text-sm md:text-base leading-relaxed ${
-                        entry.speaker === 'you' 
-                        ? 'bg-blue-600 text-white rounded-br-none' 
-                        : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none'
-                    }`}>
-                        {entry.text}
-                    </div>
-                    {entry.hint && (
-                        <div className="mt-2 text-xs font-semibold text-orange-600 bg-orange-50 px-2 py-1 rounded inline-flex items-center gap-1">
-                            <Icons.Target size={12} /> Insight: {entry.hint}
-                        </div>
-                    )}
-                    <span className="text-xs text-gray-400 mt-1 capitalize">{entry.speaker}</span>
+    <!-- Header -->
+    <header class="bjs-red text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-white p-1 rounded">
+                    <!-- Simple CSS Logo representation -->
+                    <div class="text-2xl font-bold bjs-red-text px-2">BJ's</div>
                 </div>
-            );
+                <h1 class="text-xl font-bold hidden sm:block">Member Experience Training</h1>
+            </div>
+            <div class="text-sm font-medium">Club #0033 Simulator</div>
+        </div>
+    </header>
 
-            // --- Views ---
+    <!-- Main Content Area -->
+    <main class="flex-grow container mx-auto p-4 max-w-4xl">
+        
+        <!-- Dashboard / Menu -->
+        <div id="dashboard" class="grid grid-cols-1 md:grid-cols-2 gap-6 fade-in">
+            <div class="col-span-1 md:col-span-2 bg-white rounded-xl shadow-md p-6 border-l-8 border-red-600">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome, Team Member!</h2>
+                <p class="text-gray-600">Master the membership tiers, credit card benefits, and the "Wow-Savings Pitch". Select a module to begin.</p>
+            </div>
 
-            if (view === 'intro') {
-                return (
-                    <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
-                        <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
-                            <div className="bg-blue-700 p-10 text-center">
-                                <div className="mx-auto bg-white/10 w-20 h-20 rounded-full flex items-center justify-center mb-6">
-                                    <Icons.Eye className="text-white w-10 h-10" />
+            <!-- Module 1: Membership Tiers -->
+            <div onclick="showModule('tiers')" class="bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-red-100 text-red-600 rounded-full"><i class="fas fa-id-card fa-lg"></i></div>
+                    <span class="text-xs font-bold text-gray-400">BASICS</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Membership Tiers</h3>
+                <p class="text-sm text-gray-500">Compare Club vs. Club+ benefits and math.</p>
+            </div>
+
+            <!-- Module 2: Credit Cards -->
+            <div onclick="showModule('cards')" class="bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-blue-100 text-blue-600 rounded-full"><i class="fas fa-credit-card fa-lg"></i></div>
+                    <span class="text-xs font-bold text-gray-400">PRODUCTS</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">BJ's One™ Mastercard®</h3>
+                <p class="text-sm text-gray-500">Deep dive into 3% vs 5% and gas savings.</p>
+            </div>
+
+            <!-- Module 3: Scenarios -->
+            <div onclick="showModule('scenarios')" class="bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-green-100 text-green-600 rounded-full"><i class="fas fa-comments fa-lg"></i></div>
+                    <span class="text-xs font-bold text-gray-400">ROLEPLAY</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Sales Scenarios</h3>
+                <p class="text-sm text-gray-500">Practice the "Wow-Savings Pitch" and rebuttals.</p>
+            </div>
+
+            <!-- Module 4: POS Simulator -->
+            <div onclick="showModule('pos')" class="bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-gray-100 text-gray-600 rounded-full"><i class="fas fa-cash-register fa-lg"></i></div>
+                    <span class="text-xs font-bold text-gray-400">SYSTEMS</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">POS Simulator</h3>
+                <p class="text-sm text-gray-500">Practice the application process & compliance.</p>
+            </div>
+        </div>
+
+        <!-- Module Content: Tiers -->
+        <div id="tiers" class="hidden fade-in space-y-6">
+            <button onclick="showDashboard()" class="text-gray-500 hover:text-red-600 mb-4"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>
+            <h2 class="text-2xl font-bold text-gray-800">Understanding Membership Tiers</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Club Card -->
+                <div class="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+                    <div class="h-24 bjs-red flex items-center justify-center">
+                        <span class="text-white text-2xl font-bold italic tracking-wider">THE CLUB CARD</span>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-3xl font-bold text-gray-800 mb-2">$55<span class="text-sm font-normal text-gray-500">/year</span></div>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> <span>Everyday low prices</span></li>
+                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> <span>Curbside Pickup (Free w/ $50+)</span></li>
+                            <li class="flex items-start opacity-50"><i class="fas fa-times text-gray-400 mt-1 mr-2"></i> <span>NO Rewards Earning</span></li>
+                            <li class="flex items-start opacity-50"><i class="fas fa-times text-gray-400 mt-1 mr-2"></i> <span>NO Gas Discount (Standard)</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Club+ Card -->
+                <div class="bg-white rounded-lg shadow-lg border-2 border-yellow-400 overflow-hidden relative">
+                    <div class="absolute top-0 right-0 bg-yellow-400 text-xs font-bold px-2 py-1">BEST VALUE</div>
+                    <div class="h-24 bg-gray-800 flex items-center justify-center">
+                        <span class="text-yellow-400 text-2xl font-bold italic tracking-wider">THE CLUB+ CARD</span>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-3xl font-bold text-gray-800 mb-2">$110<span class="text-sm font-normal text-gray-500">/year</span></div>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> <span class="font-bold">2% Back in Rewards</span> (on most purchases)</li>
+                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> <span class="font-bold">5¢ off/gal</span> at BJ's Gas</li>
+                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> <span>2 Free Same-Day Deliveries/Year ($20 value)</span></li>
+                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> <span>Events where rewards double</span></li>
+                        </ul>
+                        <div class="mt-4 p-3 bg-blue-50 rounded border border-blue-100 text-sm text-blue-800">
+                            <strong>Upsell Logic:</strong> If a member spends $150/week, they earn ~$156/year in rewards. The upgrade pays for itself!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module Content: Credit Cards -->
+        <div id="cards" class="hidden fade-in space-y-6">
+            <button onclick="showDashboard()" class="text-gray-500 hover:text-red-600 mb-4"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>
+            <h2 class="text-2xl font-bold text-gray-800">BJ's One™ Mastercard® Benefits</h2>
+            <p class="text-sm text-gray-600 mb-4">Click cards to flip and see details.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 h-80">
+                <!-- One Card -->
+                <div class="card-flip w-full h-64 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <!-- Front -->
+                        <div class="card-front bjs-red text-white flex flex-col justify-between p-6 shadow-xl">
+                            <div class="text-right italic font-bold">Capital One</div>
+                            <div class="text-left">
+                                <div class="w-12 h-8 bg-yellow-200 rounded mb-2 opacity-80"></div>
+                                <div class="text-2xl font-bold tracking-widest">BJ's ONE</div>
+                            </div>
+                            <div class="flex justify-between items-end">
+                                <div class="text-sm">World Mastercard</div>
+                                <div class="flex gap-1">
+                                    <div class="w-6 h-6 rounded-full bg-red-500 opacity-80"></div>
+                                    <div class="w-6 h-6 rounded-full bg-yellow-500 opacity-80 -ml-3"></div>
                                 </div>
-                                <h1 className="text-3xl font-bold text-white mb-2">Tim O'Hagan's Upsell Simulator</h1>
-                                <p className="text-blue-200 font-medium mb-4">Version 1 Beta Demo</p>
-                                <p className="text-blue-100 text-lg">Identify, Discover, Pitch.</p>
-                            </div>
-                            <div className="p-8 space-y-6">
-                                <p className="text-gray-600 text-center">
-                                    Master the MARS 2.0 process. Analyze the Member Profile, uncover needs, and pitch the perfect upgrade.
-                                </p>
-                                <button onClick={() => { setView('scenario'); startScenario(); }} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition-transform hover:scale-[1.01] flex items-center justify-center gap-2">
-                                    Start Training <Icons.ArrowRight />
-                                </button>
                             </div>
                         </div>
-                    </div>
-                );
-            }
-
-            if (view === 'summary') {
-                return (
-                    <div className="min-h-screen flex items-center justify-center p-4">
-                        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-                            <h2 className="text-3xl font-bold text-gray-800 mb-2">Simulation Complete</h2>
-                            <div className="text-6xl font-bold text-blue-600 my-6">{score}</div>
-                            <p className="text-gray-600 mb-8">
-                                {score >= 500 ? "Perfect Score! You are a master at MARS 2.0 and pivoting." : "Good effort. Review the Coach's Corner tips to refine your pivots."}
-                            </p>
-                            <button onClick={() => window.location.reload()} className="w-full bg-gray-800 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2">
-                                <Icons.RefreshCw size={18} /> Restart
-                            </button>
+                        <!-- Back -->
+                        <div class="card-back bg-white text-gray-800 flex flex-col justify-center items-center p-6 border-2 border-red-600">
+                            <h3 class="text-xl font-bold text-red-600 mb-2">BJ's One™ Benefits</h3>
+                            <ul class="text-left space-y-2 text-sm">
+                                <li><i class="fas fa-star text-yellow-500"></i> <strong>3% Back</strong> in Rewards at BJ's</li>
+                                <li><i class="fas fa-gas-pump text-blue-500"></i> <strong>10¢ off/gal</strong> at BJ's Gas</li>
+                                <li><i class="fas fa-globe text-gray-500"></i> 1.5% Back everywhere else</li>
+                                <li><i class="fas fa-ban text-red-500"></i> No Annual Fee</li>
+                            </ul>
                         </div>
                     </div>
-                );
-            }
+                </div>
 
-            // Scenario View
-            const currentScenario = scenarios[scenarioIdx];
+                <!-- One+ Card -->
+                <div class="card-flip w-full h-64 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <!-- Front -->
+                        <div class="card-front bjs-dark text-white flex flex-col justify-between p-6 shadow-xl">
+                            <div class="text-right italic font-bold">Capital One</div>
+                            <div class="text-left">
+                                <div class="w-12 h-8 bg-gray-400 rounded mb-2 opacity-80"></div>
+                                <div class="text-2xl font-bold tracking-widest">BJ's ONE+</div>
+                            </div>
+                            <div class="flex justify-between items-end">
+                                <div class="text-sm">World Elite</div>
+                                <div class="flex gap-1">
+                                    <div class="w-6 h-6 rounded-full bg-red-500 opacity-80"></div>
+                                    <div class="w-6 h-6 rounded-full bg-yellow-500 opacity-80 -ml-3"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Back -->
+                        <div class="card-back bg-white text-gray-800 flex flex-col justify-center items-center p-6 border-2 border-gray-800">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">BJ's One+™ Benefits</h3>
+                            <ul class="text-left space-y-2 text-sm">
+                                <li><i class="fas fa-star text-yellow-500"></i> <strong>5% Back</strong> in Rewards at BJ's</li>
+                                <li><i class="fas fa-gas-pump text-blue-500"></i> <strong>15¢ off/gal</strong> at BJ's Gas</li>
+                                <li><i class="fas fa-globe text-gray-500"></i> 2% Back everywhere else</li>
+                                <li><i class="fas fa-gift text-purple-500"></i> Earn bonus rewards at signup</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500 text-sm">
+                <strong>Math Trick:</strong> For a family with 2 cars (30 gallons/week), the 15¢ discount saves ~$230/year. That covers the Club+ membership fee twice!
+            </div>
+        </div>
 
-            return (
-                <div className="min-h-screen flex flex-col md:flex-row max-w-7xl mx-auto md:p-6 gap-6">
+        <!-- Module Content: Scenarios -->
+        <div id="scenarios" class="hidden fade-in space-y-6">
+            <button onclick="showDashboard()" class="text-gray-500 hover:text-red-600 mb-4"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>
+            <h2 class="text-2xl font-bold text-gray-800">Interactive Roleplay</h2>
+            
+            <div id="scenario-container" class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="bg-gray-100 p-4 border-b border-gray-200">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">M</div>
+                        <div>
+                            <div class="font-bold text-gray-800">Member (Commuter)</div>
+                            <div class="text-xs text-gray-500">Profile: Travels often, owns 2 cars, shops weekly.</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <div class="mb-6 bg-blue-50 p-4 rounded-br-xl rounded-tr-xl rounded-bl-xl inline-block max-w-[80%]">
+                        "I don't think I need the credit card or the upgrade. I already pay enough for gas and groceries as it is, I don't want another fee."
+                    </div>
+
+                    <div id="scenario-feedback" class="hidden mb-4 p-4 rounded bg-gray-100 text-sm"></div>
+
+                    <h4 class="text-sm font-bold text-gray-500 uppercase mb-3">Choose the best response:</h4>
+                    <div class="space-y-3">
+                        <button onclick="checkScenario(1)" class="w-full text-left p-4 rounded border border-gray-200 hover:bg-red-50 hover:border-red-300 transition group">
+                            <span class="font-bold text-red-600 group-hover:text-red-700 block mb-1">A. The "Annual Fee" Rebuttal</span>
+                            <span class="text-sm text-gray-600">"The card has no annual fee! And with Club+, you get free shipping on some items."</span>
+                        </button>
+                        <button onclick="checkScenario(2)" class="w-full text-left p-4 rounded border border-gray-200 hover:bg-green-50 hover:border-green-300 transition group">
+                            <span class="font-bold text-green-600 group-hover:text-green-700 block mb-1">B. The "Net-Negative" & Gas Math</span>
+                            <span class="text-sm text-gray-600">"I hear you. But since you drive a lot, the One+ card gives you 15¢ off every gallon. That saves about $230 a year, which pays for the membership and puts $100+ back in your pocket."</span>
+                        </button>
+                        <button onclick="checkScenario(3)" class="w-full text-left p-4 rounded border border-gray-200 hover:bg-red-50 hover:border-red-300 transition group">
+                            <span class="font-bold text-red-600 group-hover:text-red-700 block mb-1">C. The "Costco" Comparison</span>
+                            <span class="text-sm text-gray-600">"It's better than Costco because we have ExpressPay and our lines are shorter."</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module Content: POS Simulator -->
+        <div id="pos" class="hidden fade-in space-y-6">
+            <button onclick="showDashboard()" class="text-gray-500 hover:text-red-600 mb-4"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-800">POS Simulator</h2>
+                <span id="pos-status" class="text-xs font-bold bg-gray-200 px-2 py-1 rounded">Step 1/4</span>
+            </div>
+
+            <div class="bg-gray-800 p-4 rounded-xl shadow-2xl">
+                <!-- Screen Bezel -->
+                <div class="pos-screen h-64 p-4 mb-4 relative flex flex-col justify-between">
+                    <!-- Screen Content -->
+                    <div id="pos-screen-content">
+                        <div class="bg-white p-2 mb-2 border border-gray-400 text-xs">
+                            MEMBER: 2114123456<br>
+                            DOE, JOHN
+                        </div>
+                        <div class="bg-blue-100 border-2 border-blue-500 p-2 text-center">
+                            <p class="font-bold text-blue-900 text-sm mb-1">OFFER CREDIT CARD TO MEMBER</p>
+                            <p class="text-xs mb-2">"Congratulations! You are pre-approved for the BJ's One+ Mastercard. Earn 5% back & 15¢ off gas."</p>
+                            <p class="font-bold text-xs">WOULD YOU LIKE TO APPLY?</p>
+                        </div>
+                    </div>
                     
-                    {/* Left Panel: Customer Profile */}
-                    <div className="w-full md:w-1/3 space-y-4 p-4 md:p-0">
-                        {/* Profile Card / MARS Screen */}
-                        <div className={`bg-white rounded-2xl shadow-sm border overflow-hidden transition-all ${interactionStage === 'mars' ? 'ring-4 ring-blue-400 border-blue-400' : 'border-gray-200'}`}>
-                            <div className="p-4 bg-gray-900 text-white flex justify-between items-center">
-                                <span className="font-mono text-sm tracking-widest">MARS 2.0 CRM</span>
-                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                            </div>
-                            <div className="p-6 space-y-4 bg-slate-50 font-mono text-sm">
-                                <div className="flex items-center gap-4 border-b border-gray-200 pb-4">
-                                    <div className={`w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center`}>
-                                        <Icons.User className="text-gray-500" />
-                                    </div>
-                                    <div>
-                                        <div className="text-gray-500 text-xs">MEMBER NAME</div>
-                                        <div className="text-lg font-bold text-gray-800">{currentScenario.customer}</div>
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <div className="text-gray-500 text-xs">MEMBER SINCE</div>
-                                        <div className="font-bold text-gray-700">{currentScenario.marsData.joined}</div>
-                                    </div>
-                                    <div>
-                                        <div className="text-gray-500 text-xs">CREDIT CARD</div>
-                                        <div className="font-bold text-gray-700">{currentScenario.marsData.creditCard}</div>
-                                    </div>
-                                    <div className="col-span-2 bg-yellow-50 p-2 rounded border border-yellow-200">
-                                        <div className="text-xs text-yellow-700 font-bold">SYSTEM ALERT</div>
-                                        <div className="text-yellow-800">Upsell Opportunity Detected</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-2 px-2">
-                            <div className="flex justify-between items-center text-sm text-gray-400">
-                                <span>Scenario {scenarioIdx + 1} of {scenarios.length}</span>
-                                <span>Score: {score}</span>
-                            </div>
-                            <div className="text-center text-xs text-gray-300 font-medium mt-2">
-                                App by Tim O'Hagan
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Right Panel: Interaction Area */}
-                    <div className="w-full md:w-2/3 flex flex-col h-[85vh] md:h-auto bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden relative">
-                        
-                        {/* Phase 0: MARS Selection Overlay */}
-                        {interactionStage === 'mars' && (
-                            <div className="absolute inset-0 bg-white/95 z-50 flex flex-col items-center justify-center p-8 text-center fade-in">
-                                <div className="bg-blue-100 p-4 rounded-full mb-4">
-                                    <Icons.Eye className="text-blue-600 w-8 h-8" />
-                                </div>
-                                <h2 className="text-2xl font-bold text-gray-900 mb-2">Step 1: Identification</h2>
-                                <p className="text-gray-600 mb-8 max-w-md">
-                                    Look at the MARS 2.0 CRM screen on the left. Based on the data, identify this member's current tier to proceed.
-                                </p>
-                                <div className="grid grid-cols-2 gap-4 w-full max-w-lg">
-                                    {['Club', 'Club+', 'One Mastercard', 'One+ Mastercard'].map((tier) => (
-                                        <button
-                                            key={tier}
-                                            onClick={() => handleMarsSelection(tier === 'One Mastercard' || tier === 'One+ Mastercard' ? tier.replace(' Mastercard', '') : tier)}
-                                            className="p-4 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 font-bold text-gray-700 transition-all"
-                                        >
-                                            {tier}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Chat History */}
-                        <div className="flex-1 overflow-y-auto p-6 bg-slate-50 custom-scrollbar">
-                            {dialogueLog.map((entry, i) => (
-                                <ChatBubble key={i} entry={entry} />
-                            ))}
-                            <div ref={chatEndRef} />
-                        </div>
-
-                        {/* Controls Area */}
-                        <div className="p-6 border-t border-gray-200 bg-white min-h-[250px]">
-                            
-                            {interactionStage === 'discovery' && (
-                                <div className="fade-in">
-                                    <h3 className="text-sm font-bold text-gray-400 uppercase mb-4 flex items-center gap-2">
-                                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                                        Phase 2: Discovery - What do you ask?
-                                    </h3>
-                                    <div className="grid gap-3">
-                                        {currentScenario.discoveryOptions.map((opt, i) => (
-                                            <button 
-                                                key={i}
-                                                onClick={() => handleDiscoveryChoice(opt)}
-                                                className="text-left p-4 rounded-xl border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all text-gray-700 text-sm md:text-base font-medium"
-                                            >
-                                                "{opt.text}"
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {interactionStage === 'pitch' && (
-                                <div className="fade-in">
-                                    <h3 className="text-sm font-bold text-gray-400 uppercase mb-4 flex items-center gap-2">
-                                        <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-                                        Phase 3: The Pitch - Choose the best benefit
-                                    </h3>
-                                    <div className="grid gap-3">
-                                        {currentScenario.pitchOptions.map((opt, i) => (
-                                            <button 
-                                                key={i}
-                                                onClick={() => handlePitchChoice(opt)}
-                                                className="text-left p-4 rounded-xl border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all text-gray-700 text-sm md:text-base font-medium group"
-                                            >
-                                                <div className="flex justify-between items-center mb-1">
-                                                    <span className="font-bold text-xs text-gray-400 group-hover:text-blue-500 uppercase">Focus: {opt.targetNeed}</span>
-                                                </div>
-                                                "{opt.text}"
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {interactionStage === 'feedback' && feedback && (
-                                <div className={`p-6 rounded-xl text-center fade-in ${
-                                    feedback.type === 'success' ? 'bg-green-50 border border-green-200' : 
-                                    feedback.type === 'warning' ? 'bg-yellow-50 border border-yellow-200' :
-                                    'bg-red-50 border border-red-200'
-                                }`}>
-                                    <div className={`inline-flex p-3 rounded-full mb-3 ${
-                                        feedback.type === 'success' ? 'bg-green-100 text-green-600' : 
-                                        feedback.type === 'warning' ? 'bg-yellow-100 text-yellow-600' :
-                                        'bg-red-100 text-red-600'
-                                    }`}>
-                                        {feedback.type === 'success' ? <Icons.CheckCircle size={32} /> : <Icons.XCircle size={32} />}
-                                    </div>
-                                    <h3 className={`text-lg font-bold mb-2 ${
-                                        feedback.type === 'success' ? 'text-green-800' : 
-                                        feedback.type === 'warning' ? 'text-yellow-800' :
-                                        'text-red-800'
-                                    }`}>
-                                        {feedback.type === 'success' ? 'Upsell Successful!' : 
-                                         feedback.type === 'warning' ? 'Weak Pitch' : 'Upsell Failed'}
-                                    </h3>
-                                    <p className="text-gray-600 mb-4 max-w-lg mx-auto">{feedback.text}</p>
-                                    
-                                    {/* Coach's Corner Section */}
-                                    <div className="bg-white/60 rounded-lg p-4 mb-6 max-w-lg mx-auto text-left border border-black/5">
-                                        <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1 flex items-center gap-1">
-                                            <Icons.Zap size={12} /> Coach's Corner
-                                        </div>
-                                        <p className="text-sm font-medium text-gray-800 italic">"{feedback.tip}"</p>
-                                    </div>
-
-                                    <button 
-                                        onClick={nextScenario}
-                                        className="bg-gray-900 text-white font-bold py-3 px-8 rounded-lg hover:bg-black transition-colors"
-                                    >
-                                        Next Customer
-                                    </button>
-                                </div>
-                            )}
-
-                        </div>
+                    <!-- Bottom Bar -->
+                    <div class="bg-blue-800 text-white text-xs p-1 flex justify-between">
+                        <span>REG: 001</span>
+                        <span>OP: 1234</span>
                     </div>
                 </div>
-            );
-        };
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+                <!-- Keyboard -->
+                <div class="grid grid-cols-4 gap-2">
+                    <button class="pos-btn bg-gray-300 rounded p-3 font-bold text-gray-700" onclick="posAction('clear')">CLEAR</button>
+                    <button class="pos-btn bg-gray-300 rounded p-3 font-bold text-gray-700" onclick="posAction('total')">TOTAL</button>
+                    <button class="pos-btn bg-gray-300 rounded p-3 font-bold text-gray-700">7</button>
+                    <button class="pos-btn bg-gray-300 rounded p-3 font-bold text-gray-700">8</button>
+                    
+                    <button class="pos-btn bg-blue-600 rounded p-3 font-bold text-white col-span-2" onclick="posAction('1')">1 (YES)</button>
+                    <button class="pos-btn bg-gray-300 rounded p-3 font-bold text-gray-700">9</button>
+                    <button class="pos-btn bg-gray-300 rounded p-3 font-bold text-gray-700">4</button>
+                    
+                    <button class="pos-btn bg-red-600 rounded p-3 font-bold text-white col-span-2" onclick="posAction('2')">2 (NO)</button>
+                    <button class="pos-btn bg-gray-300 rounded p-3 font-bold text-gray-700">5</button>
+                    <button class="pos-btn bg-gray-300 rounded p-3 font-bold text-gray-700">6</button>
+
+                    <button class="pos-btn bg-green-600 rounded p-3 font-bold text-white col-span-2" onclick="posAction('enter')">ENTER</button>
+                    <button class="pos-btn bg-yellow-500 rounded p-3 font-bold text-white col-span-2" onclick="posAction('scan')">SCAN GUN</button>
+                </div>
+            </div>
+
+            <!-- Instruction Box -->
+            <div id="pos-instruction" class="bg-yellow-50 border-l-4 border-yellow-500 p-4">
+                <p class="font-bold text-yellow-800">Current Task:</p>
+                <p class="text-sm text-yellow-700">The screen has prompted a pre-approved offer. The member says "Sure, I'll try it." What do you press to start?</p>
+            </div>
+            
+            <!-- Hidden compliance check -->
+            <div id="compliance-check" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div class="bg-white p-6 rounded-lg max-w-sm w-full mx-4 shadow-2xl">
+                    <h3 class="text-xl font-bold text-red-600 mb-2"><i class="fas fa-exclamation-triangle"></i> Compliance Check</h3>
+                    <p class="mb-4 text-sm text-gray-600">Before the member accepts on the PinPad, what must you physically do?</p>
+                    <div class="space-y-2">
+                        <button onclick="resolveCompliance(true)" class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">Hand them the Credit Card Disclosures</button>
+                        <button onclick="resolveCompliance(false)" class="w-full bg-gray-200 text-gray-800 p-2 rounded hover:bg-gray-300">Tell them the APR verbally</button>
+                        <button onclick="resolveCompliance(false)" class="w-full bg-gray-200 text-gray-800 p-2 rounded hover:bg-gray-300">Ask for their Social Security Number</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-gray-800 text-gray-400 py-6 text-center text-xs">
+        <p>BJ's Internal Training Tool | Fairfax Market | FY26 Metrics</p>
+        <p class="mt-1">Remember: 100% Satisfaction Guarantee</p>
+    </footer>
+
+    <script>
+        // Module Navigation
+        function showModule(moduleId) {
+            const modules = ['tiers', 'cards', 'scenarios', 'pos'];
+            document.getElementById('dashboard').classList.add('hidden');
+            modules.forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById(moduleId).classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function showDashboard() {
+            const modules = ['tiers', 'cards', 'scenarios', 'pos'];
+            modules.forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById('dashboard').classList.remove('hidden');
+            resetPOS(); // Reset POS state when leaving
+        }
+
+        // Scenario Logic
+        function checkScenario(choice) {
+            const feedbackEl = document.getElementById('scenario-feedback');
+            feedbackEl.classList.remove('hidden', 'bg-green-100', 'bg-red-100', 'text-green-800', 'text-red-800');
+            
+            if (choice === 2) {
+                feedbackEl.classList.add('bg-green-100', 'text-green-800');
+                feedbackEl.innerHTML = `<strong><i class="fas fa-check-circle"></i> Correct!</strong><br>For commuters in Fairfax, gas is the strongest hook. Focusing on the $230 annual savings makes the membership fee feel irrelevant (Net-Negative cost).`;
+            } else if (choice === 1) {
+                feedbackEl.classList.add('bg-red-100', 'text-red-800');
+                feedbackEl.innerHTML = `<strong><i class="fas fa-times-circle"></i> Good, but not best.</strong><br>While true, "No Annual Fee" is a passive benefit. Active savers (commuters) respond better to tangible dollar amounts like gas savings.`;
+            } else {
+                feedbackEl.classList.add('bg-red-100', 'text-red-800');
+                feedbackEl.innerHTML = `<strong><i class="fas fa-times-circle"></i> Avoid this.</strong><br>Don't bring up the competitor unless necessary. Focus on BJ's specific value proposition (Gas & 5% Back) first.`;
+            }
+        }
+
+        // POS Simulator Logic
+        let posStep = 1;
+
+        function posAction(key) {
+            const screen = document.getElementById('pos-screen-content');
+            const instruction = document.getElementById('pos-instruction');
+            const status = document.getElementById('pos-status');
+
+            if (posStep === 1 && key === '1') {
+                // Step 1: Accept Offer
+                posStep = 2;
+                screen.innerHTML = `
+                    <div class="bg-yellow-100 border border-yellow-500 p-2 text-center mt-4">
+                        <p class="font-bold text-gray-800">SCAN MEMBER STATE ID</p>
+                        <p class="text-xs">OR PRESS CLEAR</p>
+                    </div>
+                `;
+                instruction.innerHTML = `<p class="font-bold text-yellow-800">Step 2:</p><p class="text-sm text-yellow-700">The system needs to verify the member. What do you do now?</p>`;
+                status.innerText = "Step 2/4";
+            } else if (posStep === 2 && key === 'scan') {
+                // Step 2: Scan ID
+                // Trigger Compliance Check Modal
+                document.getElementById('compliance-check').classList.remove('hidden');
+            } else if (posStep === 4 && key === 'enter') {
+                // Step 4: Completion
+                screen.innerHTML = `
+                    <div class="bg-green-100 border border-green-500 p-2 text-center mt-4">
+                        <p class="font-bold text-green-800">APPLICATION APPROVED</p>
+                        <p class="text-xs">Provide CCD Pamphlet.</p>
+                        <p class="text-xs mt-2">Receipt Printing...</p>
+                    </div>
+                `;
+                instruction.innerHTML = `<p class="font-bold text-green-800">Success!</p><p class="text-sm text-green-700">You have successfully processed the application. Don't forget to mention the instant credit available for today's purchase!</p>`;
+                status.innerText = "Complete";
+            } else if (key === 'clear') {
+                resetPOS();
+            }
+        }
+
+        function resolveCompliance(isCorrect) {
+            if (isCorrect) {
+                document.getElementById('compliance-check').classList.add('hidden');
+                posStep = 4; // Skip to 4 to simulate pinpad interaction
+                const screen = document.getElementById('pos-screen-content');
+                const instruction = document.getElementById('pos-instruction');
+                const status = document.getElementById('pos-status');
+                
+                screen.innerHTML = `
+                    <div class="bg-blue-50 border border-blue-300 p-2 text-center mt-4">
+                        <p class="font-bold text-gray-800">WAITING FOR MEMBER...</p>
+                        <p class="text-xs">Member is accepting terms on PinPad...</p>
+                        <i class="fas fa-spinner fa-spin mt-2"></i>
+                    </div>
+                `;
+                instruction.innerHTML = `<p class="font-bold text-yellow-800">Step 3:</p><p class="text-sm text-yellow-700">The member has accepted on the PinPad. The register prompts '1 Enter' to finish.</p>`;
+                status.innerText = "Step 3/4";
+            } else {
+                alert("Incorrect. Compliance requires physically handing the disclosures brochure (CCD) before they accept.");
+            }
+        }
+
+        function resetPOS() {
+            posStep = 1;
+            document.getElementById('pos-status').innerText = "Step 1/4";
+            document.getElementById('pos-screen-content').innerHTML = `
+                <div class="bg-white p-2 mb-2 border border-gray-400 text-xs">
+                    MEMBER: 2114123456<br>
+                    DOE, JOHN
+                </div>
+                <div class="bg-blue-100 border-2 border-blue-500 p-2 text-center">
+                    <p class="font-bold text-blue-900 text-sm mb-1">OFFER CREDIT CARD TO MEMBER</p>
+                    <p class="text-xs mb-2">"Congratulations! You are pre-approved for the BJ's One+ Mastercard. Earn 5% back & 15¢ off gas."</p>
+                    <p class="font-bold text-xs">WOULD YOU LIKE TO APPLY?</p>
+                </div>
+            `;
+            document.getElementById('pos-instruction').innerHTML = `
+                <p class="font-bold text-yellow-800">Current Task:</p>
+                <p class="text-sm text-yellow-700">The screen has prompted a pre-approved offer. The member says "Sure, I'll try it." What do you press to start?</p>
+            `;
+            document.getElementById('compliance-check').classList.add('hidden');
+        }
     </script>
 </body>
 </html>
