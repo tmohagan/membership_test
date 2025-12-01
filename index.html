@@ -3,486 +3,501 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BJ's Member Experience Training</title>
+    <title>BJ's Membership Mastery Simulator</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
-        
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f3f4f6;
-        }
-
-        .bjs-red { background-color: #CF0A2C; }
-        .bjs-red-text { color: #CF0A2C; }
-        .bjs-dark { background-color: #1a1a1a; }
-        
-        .card-flip {
-            perspective: 1000px;
-        }
-        .card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-        }
-        .card-flip:hover .card-inner {
-            transform: rotateY(180deg);
-        }
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .card-back {
-            transform: rotateY(180deg);
-        }
-
-        /* POS Screen Styles */
-        .pos-screen {
-            background-color: #e5e7eb;
-            border: 4px solid #374151;
-            font-family: 'Courier New', Courier, monospace;
-        }
-        .pos-btn {
-            box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
-        }
-        .pos-btn:active {
-            box-shadow: inset 2px 2px 0px rgba(0,0,0,0.2);
-            transform: translateY(2px);
-        }
-
-        .fade-in { animation: fadeIn 0.5s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        body { font-family: 'Roboto', sans-serif; background-color: #f3f4f6; }
+        .bjs-red { background-color: #CD122D; }
+        .bjs-red-text { color: #CD122D; }
+        .mars-header { background-color: #000; color: white; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
+    <div id="root"></div>
 
-    <!-- Header -->
-    <header class="bjs-red text-white p-4 shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="bg-white p-1 rounded">
-                    <!-- Simple CSS Logo representation -->
-                    <div class="text-2xl font-bold bjs-red-text px-2">BJ's</div>
-                </div>
-                <h1 class="text-xl font-bold hidden sm:block">Member Experience Training</h1>
-            </div>
-            <div class="text-sm font-medium">Club #0033 Simulator</div>
-        </div>
-    </header>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-    <!-- Main Content Area -->
-    <main class="flex-grow container mx-auto p-4 max-w-4xl">
-        
-        <!-- Dashboard / Menu -->
-        <div id="dashboard" class="grid grid-cols-1 md:grid-cols-2 gap-6 fade-in">
-            <div class="col-span-1 md:col-span-2 bg-white rounded-xl shadow-md p-6 border-l-8 border-red-600">
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome, Team Member!</h2>
-                <p class="text-gray-600">Master the membership tiers, credit card benefits, and the "Wow-Savings Pitch". Select a module to begin.</p>
-            </div>
+        // --- DATA & SCENARIOS ---
 
-            <!-- Module 1: Membership Tiers -->
-            <div onclick="showModule('tiers')" class="bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="p-3 bg-red-100 text-red-600 rounded-full"><i class="fas fa-id-card fa-lg"></i></div>
-                    <span class="text-xs font-bold text-gray-400">BASICS</span>
-                </div>
-                <h3 class="text-xl font-bold text-gray-800 mb-2">Membership Tiers</h3>
-                <p class="text-sm text-gray-500">Compare Club vs. Club+ benefits and math.</p>
-            </div>
+        const scenarios = [
+            {
+                id: 1,
+                title: "The Gas Conscious Commuter",
+                description: "A member complains about gas prices while renewing their basic Club membership.",
+                customerName: "Sarah Jenkins",
+                marsData: {
+                    tier: "The Club Card",
+                    expiration: "Expires Today",
+                    ytdSpend: "$1,200",
+                    offers: ["Cobrand", "Upgrade"],
+                    gasUsage: "High"
+                },
+                dialogueTree: {
+                    start: {
+                        npc: "Hi, I just need to renew my membership. I'm in a rush, gas prices are killing me and I need to fill up.",
+                        options: [
+                            { text: "No problem, that will be $55. Go ahead and swipe.", score: 0, next: "fail_passive", feedback: "You processed the transaction but missed a huge opportunity to solve the member's pain point (gas prices)." },
+                            { text: "I hear you! Gas is expensive. Did you know if you switch to the BJ's One+ Mastercard, you'd save 15 cents a gallon instantly?", score: 5, next: "pitch_credit_direct", feedback: "Good instinct to address the gas, but the best practice (WOW Pitch) is to anchor the Membership Upgrade first or bundle them." },
+                            { text: "I can help with that. Since you drive a lot, I recommend maximizing your savings with our Club+ Membership and the BJ's One+ Mastercard. You'd get 15 cents off every gallon and 5% back on purchases.", score: 10, next: "objection_fee", feedback: "Excellent! You used the 'Anchor High' strategy from the WOW Pitch training, addressing their specific pain point immediately." }
+                        ]
+                    },
+                    fail_passive: {
+                        npc: "Thanks. *Member leaves*",
+                        end: true,
+                        success: false,
+                        message: "Missed Opportunity. The member explicitly mentioned gas prices. That is a trigger for the One+ pitch."
+                    },
+                    pitch_credit_direct: {
+                        npc: "I don't need another credit card right now.",
+                        options: [
+                            { text: "Okay, we can just do the regular renewal then.", score: 0, next: "fail_passive", feedback: "Don't give up so easily! Pivot to the membership tier benefits." },
+                            { text: "I understand. Even without the credit card, upgrading to Club+ saves you 5 cents/gallon and earns 2% back. It pays for itself with your spending.", score: 8, next: "success_upgrade", feedback: "Great pivot (The Downsell). You secured the upgrade even if they declined the credit." }
+                        ]
+                    },
+                    objection_fee: {
+                        npc: "That sounds nice, but I don't want to pay a higher membership fee. $110 is a lot.",
+                        options: [
+                            { text: "It is more expensive, but it's worth it.", score: 2, next: "fail_fee", feedback: "Avoid simply agreeing that it's expensive. Use the 'Net-Negative' cost logic." },
+                            { text: "I totally get that. But with the rewards you'll earn and the gas savings, we're basically paying you to join. Plus, it has a 100% Money-Back Guarantee. If you don't save enough, we refund the fee.", score: 10, next: "success_bundle", feedback: "Perfect execution. You used 'Risk Reversal' (Money-Back Guarantee) and 'Value Stack' logic." }
+                        ]
+                    },
+                    fail_fee: {
+                        npc: "I'll stick with the basic for now.",
+                        end: true,
+                        success: false,
+                        message: "The member didn't see the value. Always use the Money-Back Guarantee to overcome fee objections."
+                    },
+                    success_upgrade: {
+                        npc: "Alright, 5 cents off helps. Let's do the Club+ upgrade.",
+                        end: true,
+                        success: true,
+                        tier: "Club+",
+                        message: "Success! You secured a Membership Upgrade by pivoting to value."
+                    },
+                    success_bundle: {
+                        npc: "Well, if there's a guarantee, I guess I have nothing to lose. Let's do it.",
+                        end: true,
+                        success: true,
+                        tier: "One+ Mastercard",
+                        message: "Mastery! You secured a Club+ Upgrade AND a Credit App. This is the 'Golden Metric'."
+                    }
+                }
+            },
+            {
+                id: 2,
+                title: "The Big Spender",
+                description: "A member has a cart full of electronics and groceries (~$400 value).",
+                customerName: "Robert Vance",
+                marsData: {
+                    tier: "The Club Card",
+                    expiration: "05/2026",
+                    ytdSpend: "$3,500",
+                    offers: ["Upgrade"],
+                    gasUsage: "Low"
+                },
+                dialogueTree: {
+                    start: {
+                        npc: "(Placing large TV on belt) Just these today. Hoping to get out quick.",
+                        options: [
+                            { text: "Sure thing, I'll ring you up.", score: 0, next: "fail_passive", feedback: "You ignored the high cart value. MARS shows high YTD spend. This member is losing money by not being Club+." },
+                            { text: "Wow, nice TV! Robert, I see you're a loyal shopper. You're currently leaving money on the table by not being a Club+ member.", score: 10, next: "curiosity", feedback: "Great hook. Using the phrase 'leaving money on the table' creates Loss Aversion." },
+                            { text: "Do you want to apply for a credit card today to save $40?", score: 5, next: "objection_credit", feedback: "Okay, but a bit aggressive. The Upgrade is the easier sell here first based on his cart size." }
+                        ]
+                    },
+                    fail_passive: {
+                        npc: "Thanks.",
+                        end: true,
+                        success: false,
+                        message: "This member spends $3,500/year. 2% rewards would be $70. The upgrade pays for itself immediately."
+                    },
+                    curiosity: {
+                        npc: "What do you mean leaving money on the table?",
+                        options: [
+                            { text: "With Club+, you get 2% back. On this TV alone, you'd earn a chunk of the upgrade fee back instantly. It's risk-free.", score: 10, next: "success_upgrade", feedback: "Excellent use of immediate math." },
+                            { text: "You get coupons and 5 cents off gas.", score: 4, next: "fail_relevance", feedback: "He's buying a TV, not gas. Tailor the benefit to the current purchase." }
+                        ]
+                    },
+                    objection_credit: {
+                        npc: "No, I have too many cards.",
+                        options: [
+                            { text: "Understood. But you should at least upgrade to Club+. You'll earn 2% back on this purchase today.", score: 8, next: "success_upgrade", feedback: "Good pivot to the membership upgrade." }
+                        ]
+                    },
+                    fail_relevance: {
+                        npc: "I don't drive much. Just ring it up.",
+                        end: true,
+                        success: false,
+                        message: "Know your customer. Focus on the 2% rewards for high spenders."
+                    },
+                    success_upgrade: {
+                        npc: "If I earn on this TV, that makes sense. Go ahead.",
+                        end: true,
+                        success: true,
+                        tier: "Club+",
+                        message: "Success! You identified a high-spender and used the 'Math' to close the upgrade."
+                    }
+                }
+            },
+            {
+                id: 3,
+                title: "The Busy Parent",
+                description: "A member buying bulk diapers and snacks, looking visibly stressed/rushed.",
+                customerName: "Emily Chen",
+                marsData: {
+                    tier: "The Club Card",
+                    expiration: "01/2026",
+                    ytdSpend: "$800",
+                    offers: ["Cobrand"],
+                    gasUsage: "Med"
+                },
+                dialogueTree: {
+                    start: {
+                        npc: "Hi, sorry, my toddler is melting down. Can we make this fast?",
+                        options: [
+                            { text: "I'll scan as fast as I can!", score: 2, next: "fail_nice_but_missed", feedback: "Polite, but you missed the cue. 'Stressed/Busy' = Convenience Pitch." },
+                            { text: "I see you've got your hands full! Did you know Club+ members get free curbside pickup and same-day delivery? You wouldn't even have to come inside next time.", score: 10, next: "interest_convenience", feedback: "Perfect. You identified the 'Time Poverty' friction and offered the 'Convenience Premium' solution." },
+                            { text: "Do you want to apply for a Mastercard to save 10 cents on gas?", score: 0, next: "hard_no", feedback: "Wrong time. A stressed parent doesn't want a credit check right now. Pitch the lifestyle benefit." }
+                        ]
+                    },
+                    fail_nice_but_missed: {
+                        npc: "Thanks.",
+                        end: true,
+                        success: false,
+                        message: "You were efficient, but missed upgrading a member who clearly needs the Convenience perks (Curbside/Delivery)."
+                    },
+                    hard_no: {
+                        npc: "No! I just want to go home.",
+                        end: true,
+                        success: false,
+                        message: "Read the room. Don't pitch a complex financial product to a distressed member. Pitch the time-saving upgrade."
+                    },
+                    interest_convenience: {
+                        npc: "Free delivery? I thought that cost extra.",
+                        options: [
+                            { text: "It's included in Club+. Plus 2% rewards. It costs a bit more but saves you hours of shopping.", score: 10, next: "success_upgrade", feedback: "You sold the value of time. This is key for the Fairfax/busy market demographic." }
+                        ]
+                    },
+                    success_upgrade: {
+                        npc: "If I don't have to drag the kids out next time, it's worth every penny. Sign me up.",
+                        end: true,
+                        success: true,
+                        tier: "Club+",
+                        message: "Success! You solved a lifestyle problem with a membership solution."
+                    }
+                }
+            }
+        ];
 
-            <!-- Module 2: Credit Cards -->
-            <div onclick="showModule('cards')" class="bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="p-3 bg-blue-100 text-blue-600 rounded-full"><i class="fas fa-credit-card fa-lg"></i></div>
-                    <span class="text-xs font-bold text-gray-400">PRODUCTS</span>
-                </div>
-                <h3 class="text-xl font-bold text-gray-800 mb-2">BJ's One™ Mastercard®</h3>
-                <p class="text-sm text-gray-500">Deep dive into 3% vs 5% and gas savings.</p>
-            </div>
+        // --- COMPONENTS ---
 
-            <!-- Module 3: Scenarios -->
-            <div onclick="showModule('scenarios')" class="bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="p-3 bg-green-100 text-green-600 rounded-full"><i class="fas fa-comments fa-lg"></i></div>
-                    <span class="text-xs font-bold text-gray-400">ROLEPLAY</span>
-                </div>
-                <h3 class="text-xl font-bold text-gray-800 mb-2">Sales Scenarios</h3>
-                <p class="text-sm text-gray-500">Practice the "Wow-Savings Pitch" and rebuttals.</p>
-            </div>
-
-            <!-- Module 4: POS Simulator -->
-            <div onclick="showModule('pos')" class="bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="p-3 bg-gray-100 text-gray-600 rounded-full"><i class="fas fa-cash-register fa-lg"></i></div>
-                    <span class="text-xs font-bold text-gray-400">SYSTEMS</span>
-                </div>
-                <h3 class="text-xl font-bold text-gray-800 mb-2">POS Simulator</h3>
-                <p class="text-sm text-gray-500">Practice the application process & compliance.</p>
-            </div>
-        </div>
-
-        <!-- Module Content: Tiers -->
-        <div id="tiers" class="hidden fade-in space-y-6">
-            <button onclick="showDashboard()" class="text-gray-500 hover:text-red-600 mb-4"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>
-            <h2 class="text-2xl font-bold text-gray-800">Understanding Membership Tiers</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Club Card -->
-                <div class="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
-                    <div class="h-24 bjs-red flex items-center justify-center">
-                        <span class="text-white text-2xl font-bold italic tracking-wider">THE CLUB CARD</span>
-                    </div>
-                    <div class="p-6">
-                        <div class="text-3xl font-bold text-gray-800 mb-2">$55<span class="text-sm font-normal text-gray-500">/year</span></div>
-                        <ul class="space-y-3 text-sm">
-                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> <span>Everyday low prices</span></li>
-                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> <span>Curbside Pickup (Free w/ $50+)</span></li>
-                            <li class="flex items-start opacity-50"><i class="fas fa-times text-gray-400 mt-1 mr-2"></i> <span>NO Rewards Earning</span></li>
-                            <li class="flex items-start opacity-50"><i class="fas fa-times text-gray-400 mt-1 mr-2"></i> <span>NO Gas Discount (Standard)</span></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Club+ Card -->
-                <div class="bg-white rounded-lg shadow-lg border-2 border-yellow-400 overflow-hidden relative">
-                    <div class="absolute top-0 right-0 bg-yellow-400 text-xs font-bold px-2 py-1">BEST VALUE</div>
-                    <div class="h-24 bg-gray-800 flex items-center justify-center">
-                        <span class="text-yellow-400 text-2xl font-bold italic tracking-wider">THE CLUB+ CARD</span>
-                    </div>
-                    <div class="p-6">
-                        <div class="text-3xl font-bold text-gray-800 mb-2">$110<span class="text-sm font-normal text-gray-500">/year</span></div>
-                        <ul class="space-y-3 text-sm">
-                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> <span class="font-bold">2% Back in Rewards</span> (on most purchases)</li>
-                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> <span class="font-bold">5¢ off/gal</span> at BJ's Gas</li>
-                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> <span>2 Free Same-Day Deliveries/Year ($20 value)</span></li>
-                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> <span>Events where rewards double</span></li>
-                        </ul>
-                        <div class="mt-4 p-3 bg-blue-50 rounded border border-blue-100 text-sm text-blue-800">
-                            <strong>Upsell Logic:</strong> If a member spends $150/week, they earn ~$156/year in rewards. The upgrade pays for itself!
+        const MarsScreen = ({ data }) => {
+            if (!data) return null;
+            return (
+                <div className="bg-white border-2 border-gray-300 shadow-lg mb-4 rounded-md overflow-hidden font-sans">
+                    <div className="mars-header p-2 flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                            <span className="bg-red-600 text-white font-bold px-2 py-1 rounded">BJ's</span>
+                            <span className="font-bold text-xl">MARS 2.0</span>
+                        </div>
+                        <div className="text-sm">
+                            <span className="mr-4">Club 033</span>
+                            <span>{data.customerName}</span>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Module Content: Credit Cards -->
-        <div id="cards" class="hidden fade-in space-y-6">
-            <button onclick="showDashboard()" class="text-gray-500 hover:text-red-600 mb-4"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>
-            <h2 class="text-2xl font-bold text-gray-800">BJ's One™ Mastercard® Benefits</h2>
-            <p class="text-sm text-gray-600 mb-4">Click cards to flip and see details.</p>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 h-80">
-                <!-- One Card -->
-                <div class="card-flip w-full h-64 cursor-pointer" onclick="this.classList.toggle('flipped')">
-                    <div class="card-inner">
-                        <!-- Front -->
-                        <div class="card-front bjs-red text-white flex flex-col justify-between p-6 shadow-xl">
-                            <div class="text-right italic font-bold">Capital One</div>
-                            <div class="text-left">
-                                <div class="w-12 h-8 bg-yellow-200 rounded mb-2 opacity-80"></div>
-                                <div class="text-2xl font-bold tracking-widest">BJ's ONE</div>
+                    <div className="p-4 bg-gray-50">
+                        {/* New Layout to prevent cramping */}
+                        <div className="grid grid-cols-1 gap-3">
+                            
+                            {/* Row 1: Full width Tier Info */}
+                            <div className="bg-white p-3 border rounded shadow-sm flex justify-between items-center">
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase font-bold">Current Tier</p>
+                                    <p className={`text-lg font-bold ${data.tier.includes('+') ? 'text-purple-700' : 'bjs-red-text'}`}>
+                                        {data.tier}
+                                    </p>
+                                </div>
+                                {data.tier === "The Club Card" && (
+                                    <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded border border-red-200 font-bold">
+                                        Upgrade Avail.
+                                    </span>
+                                )}
                             </div>
-                            <div class="flex justify-between items-end">
-                                <div class="text-sm">World Mastercard</div>
-                                <div class="flex gap-1">
-                                    <div class="w-6 h-6 rounded-full bg-red-500 opacity-80"></div>
-                                    <div class="w-6 h-6 rounded-full bg-yellow-500 opacity-80 -ml-3"></div>
+
+                            {/* Row 2: Status and Spend Side-by-Side */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="bg-white p-3 border rounded shadow-sm">
+                                    <p className="text-xs text-gray-500 uppercase font-bold">Status</p>
+                                    <p className="text-gray-800 font-medium">{data.expiration}</p>
+                                </div>
+                                <div className="bg-white p-3 border rounded shadow-sm">
+                                    <p className="text-xs text-gray-500 uppercase font-bold">YTD Spend</p>
+                                    <p className="text-gray-800 font-mono font-bold">{data.ytdSpend}</p>
+                                </div>
+                            </div>
+
+                            {/* Row 3: Full width Offers with Wrapping */}
+                            <div className="bg-white p-3 border rounded shadow-sm">
+                                <p className="text-xs text-gray-500 uppercase font-bold mb-2">Recommended Offers</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {data.offers.map(offer => (
+                                        <span key={offer} className="bg-blue-50 text-blue-700 text-xs font-bold px-2 py-1 rounded border border-blue-200 shadow-sm">
+                                            {offer}
+                                        </span>
+                                    ))}
                                 </div>
                             </div>
                         </div>
-                        <!-- Back -->
-                        <div class="card-back bg-white text-gray-800 flex flex-col justify-center items-center p-6 border-2 border-red-600">
-                            <h3 class="text-xl font-bold text-red-600 mb-2">BJ's One™ Benefits</h3>
-                            <ul class="text-left space-y-2 text-sm">
-                                <li><i class="fas fa-star text-yellow-500"></i> <strong>3% Back</strong> in Rewards at BJ's</li>
-                                <li><i class="fas fa-gas-pump text-blue-500"></i> <strong>10¢ off/gal</strong> at BJ's Gas</li>
-                                <li><i class="fas fa-globe text-gray-500"></i> 1.5% Back everywhere else</li>
-                                <li><i class="fas fa-ban text-red-500"></i> No Annual Fee</li>
-                            </ul>
-                        </div>
                     </div>
                 </div>
+            );
+        };
 
-                <!-- One+ Card -->
-                <div class="card-flip w-full h-64 cursor-pointer" onclick="this.classList.toggle('flipped')">
-                    <div class="card-inner">
-                        <!-- Front -->
-                        <div class="card-front bjs-dark text-white flex flex-col justify-between p-6 shadow-xl">
-                            <div class="text-right italic font-bold">Capital One</div>
-                            <div class="text-left">
-                                <div class="w-12 h-8 bg-gray-400 rounded mb-2 opacity-80"></div>
-                                <div class="text-2xl font-bold tracking-widest">BJ's ONE+</div>
+        const FeedbackModal = ({ feedback, score, onNext, isEnd, success }) => {
+            const isGood = score >= 5;
+            
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-lg p-6 max-w-lg w-full shadow-2xl animate-fade-in-up">
+                        <h3 className={`text-xl font-bold mb-2 ${!isGood ? 'text-red-600' : 'text-green-600'}`}>
+                            {!isGood ? "Coach's Corner (Improvement Needed)" : "Great Job!"}
+                        </h3>
+                        <p className="text-gray-700 mb-6">{feedback}</p>
+                        <button 
+                            onClick={onNext}
+                            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200"
+                        >
+                            {isEnd ? (success ? "See Results" : "End Interaction") : "Continue Interaction"}
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        const Simulator = () => {
+            const [gameState, setGameState] = useState('menu'); // menu, playing, feedback, end
+            const [currentScenario, setCurrentScenario] = useState(null);
+            const [dialogueId, setDialogueId] = useState('start');
+            const [totalScore, setTotalScore] = useState(0);
+            const [feedbackState, setFeedbackState] = useState(null);
+            const [history, setHistory] = useState([]);
+            const [finalResult, setFinalResult] = useState(null); // Stores result for end screen to prevent crash
+
+            const startScenario = (scenario) => {
+                setCurrentScenario(scenario);
+                setDialogueId('start');
+                setTotalScore(0);
+                setHistory([]);
+                setFinalResult(null);
+                setGameState('playing');
+            };
+
+            const handleChoice = (option) => {
+                const currentDialogue = currentScenario.dialogueTree[dialogueId];
+                
+                // Add to history
+                setHistory([...history, { type: 'npc', text: currentDialogue.npc }, { type: 'user', text: option.text }]);
+                
+                // Update total score
+                setTotalScore(prev => prev + option.score);
+
+                // Show feedback modal
+                setFeedbackState({
+                    text: option.feedback,
+                    score: option.score, // Pass the specific option score to determine feedback type
+                    next: option.next
+                });
+                setGameState('feedback');
+            };
+
+            const advanceDialogue = () => {
+                const nextId = feedbackState.next;
+                const nextNode = currentScenario.dialogueTree[nextId];
+                
+                if (nextNode && nextNode.end) {
+                    // Prepare Final Result Data BEFORE clearing feedback or changing state
+                    setFinalResult({
+                        success: nextNode.success,
+                        message: nextNode.message,
+                        tier: nextNode.tier || "No Change"
+                    });
+                    setHistory([...history, { type: 'npc', text: nextNode.npc }]); // Add final NPC line
+                    setFeedbackState(null); // Clear feedback
+                    setGameState('end'); // Move to end screen
+                } else {
+                    setDialogueId(nextId);
+                    setFeedbackState(null);
+                    setGameState('playing');
+                }
+            };
+
+            const resetGame = () => {
+                setGameState('menu');
+                setCurrentScenario(null);
+                setDialogueId('start');
+                setTotalScore(0);
+                setHistory([]);
+                setFeedbackState(null);
+                setFinalResult(null);
+            };
+
+            // -- RENDER: MENU --
+            if (gameState === 'menu') {
+                return (
+                    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+                        <div className="bg-white p-8 rounded-xl shadow-2xl max-w-2xl w-full border-t-8 border-red-600">
+                            <div className="flex justify-center mb-6">
+                                <h1 className="text-4xl font-bold bjs-red-text tracking-tighter">BJ's Membership Mastery</h1>
                             </div>
-                            <div class="flex justify-between items-end">
-                                <div class="text-sm">World Elite</div>
-                                <div class="flex gap-1">
-                                    <div class="w-6 h-6 rounded-full bg-red-500 opacity-80"></div>
-                                    <div class="w-6 h-6 rounded-full bg-yellow-500 opacity-80 -ml-3"></div>
+                            <p className="text-gray-600 text-center mb-8 text-lg">
+                                Select a training scenario to practice your WOW pitch and maximize member value.
+                            </p>
+                            
+                            <div className="grid gap-4">
+                                {scenarios.map(scen => (
+                                    <button 
+                                        key={scen.id}
+                                        onClick={() => startScenario(scen)}
+                                        className="text-left p-4 border border-gray-200 rounded-lg hover:border-red-500 hover:shadow-md transition duration-200 bg-white group"
+                                    >
+                                        <h3 className="font-bold text-lg group-hover:text-red-600">{scen.title}</h3>
+                                        <p className="text-sm text-gray-500">{scen.description}</p>
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="mt-8 text-center text-xs text-gray-400">
+                                Based on Sales Training & Strategies • MARS 2.0 • Daily Drive Protocols
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // -- RENDER: END SCREEN --
+            if (gameState === 'end') {
+                // Now we read from finalResult state, not the cleared feedback state
+                const { success, message, tier } = finalResult;
+                
+                return (
+                    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-100">
+                        <div className="bg-white p-8 rounded-xl shadow-xl max-w-lg w-full text-center">
+                            <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4 ${success ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                                <span className="text-4xl">{success ? '✓' : '✗'}</span>
+                            </div>
+                            <h2 className="text-2xl font-bold mb-2">{success ? 'Outcome: Upgrade Secured!' : 'Outcome: Missed Opportunity'}</h2>
+                            <p className="text-gray-600 mb-6">{message}</p>
+                            
+                            <div className="bg-gray-50 p-4 rounded-lg mb-6 text-left">
+                                <h4 className="font-bold text-sm text-gray-500 uppercase mb-2">Performance Scorecard</h4>
+                                <div className="flex justify-between mb-1">
+                                    <span>Interaction Score:</span>
+                                    <span className="font-bold">{totalScore} / 20</span>
+                                </div>
+                                <div className="flex justify-between mb-1">
+                                    <span>Result:</span>
+                                    <span className={success ? "text-green-600 font-bold" : "text-red-600 font-bold"}>
+                                        {tier}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <button 
+                                onClick={resetGame}
+                                className="bg-gray-800 text-white px-6 py-2 rounded hover:bg-gray-900 transition"
+                            >
+                                Return to Menu
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            // -- RENDER: PLAYING --
+            const currentDialogue = currentScenario.dialogueTree[dialogueId];
+
+            return (
+                <div className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
+                    <div className="flex justify-between items-center mb-4">
+                        <button onClick={resetGame} className="text-gray-500 hover:text-red-600 text-sm">← Exit Simulation</button>
+                        <div className="text-gray-400 text-sm">Scenario: {currentScenario.title}</div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-6">
+                        {/* Left Col: MARS System */}
+                        <div className="md:col-span-1">
+                            <MarsScreen data={currentScenario.marsData} />
+                            
+                            <div className="bg-blue-50 border border-blue-200 p-4 rounded-md text-sm text-blue-800">
+                                <strong>💡 Daily Drive Tip:</strong>
+                                <br/>
+                                Always check MARS 2.0 first. Look for "Leaving Money on the Table" (High Spend) or "Convenience" needs.
+                            </div>
+                        </div>
+
+                        {/* Right Col: Conversation */}
+                        <div className="md:col-span-2 flex flex-col h-[600px] bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
+                            
+                            {/* Chat History */}
+                            <div className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-4">
+                                {history.map((entry, idx) => (
+                                    <div key={idx} className={`flex ${entry.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                        <div className={`max-w-[80%] p-3 rounded-lg ${
+                                            entry.type === 'user' 
+                                            ? 'bg-red-600 text-white rounded-br-none' 
+                                            : 'bg-white border border-gray-300 text-gray-800 rounded-bl-none shadow-sm'
+                                        }`}>
+                                            {entry.text}
+                                        </div>
+                                    </div>
+                                ))}
+                                
+                                {/* Current NPC Line */}
+                                <div className="flex justify-start">
+                                    <div className="max-w-[80%] p-3 rounded-lg bg-white border border-gray-300 text-gray-800 rounded-bl-none shadow-sm animate-fade-in">
+                                        <span className="block text-xs text-gray-400 font-bold mb-1 uppercase">Member</span>
+                                        {currentDialogue.npc}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Options Area */}
+                            <div className="p-4 bg-white border-t border-gray-200">
+                                <p className="text-sm font-bold text-gray-500 mb-3 uppercase">Your Response:</p>
+                                <div className="space-y-2">
+                                    {currentDialogue.options.map((opt, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => handleChoice(opt)}
+                                            className="w-full text-left p-3 rounded border border-gray-300 hover:bg-red-50 hover:border-red-300 hover:text-red-700 transition duration-150 text-sm"
+                                        >
+                                            {opt.text}
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
                         </div>
-                        <!-- Back -->
-                        <div class="card-back bg-white text-gray-800 flex flex-col justify-center items-center p-6 border-2 border-gray-800">
-                            <h3 class="text-xl font-bold text-gray-800 mb-2">BJ's One+™ Benefits</h3>
-                            <ul class="text-left space-y-2 text-sm">
-                                <li><i class="fas fa-star text-yellow-500"></i> <strong>5% Back</strong> in Rewards at BJ's</li>
-                                <li><i class="fas fa-gas-pump text-blue-500"></i> <strong>15¢ off/gal</strong> at BJ's Gas</li>
-                                <li><i class="fas fa-globe text-gray-500"></i> 2% Back everywhere else</li>
-                                <li><i class="fas fa-gift text-purple-500"></i> Earn bonus rewards at signup</li>
-                            </ul>
-                        </div>
                     </div>
+
+                    {/* Feedback Modal Overlay */}
+                    {gameState === 'feedback' && feedbackState && (
+                        <FeedbackModal 
+                            feedback={feedbackState.text} 
+                            score={feedbackState.score}
+                            onNext={advanceDialogue}
+                            isEnd={currentScenario.dialogueTree[feedbackState.next]?.end}
+                            success={currentScenario.dialogueTree[feedbackState.next]?.success}
+                        />
+                    )}
                 </div>
-            </div>
-            
-            <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500 text-sm">
-                <strong>Math Trick:</strong> For a family with 2 cars (30 gallons/week), the 15¢ discount saves ~$230/year. That covers the Club+ membership fee twice!
-            </div>
-        </div>
+            );
+        };
 
-        <!-- Module Content: Scenarios -->
-        <div id="scenarios" class="hidden fade-in space-y-6">
-            <button onclick="showDashboard()" class="text-gray-500 hover:text-red-600 mb-4"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>
-            <h2 class="text-2xl font-bold text-gray-800">Interactive Roleplay</h2>
-            
-            <div id="scenario-container" class="bg-white rounded-xl shadow-lg overflow-hidden">
-                <div class="bg-gray-100 p-4 border-b border-gray-200">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">M</div>
-                        <div>
-                            <div class="font-bold text-gray-800">Member (Commuter)</div>
-                            <div class="text-xs text-gray-500">Profile: Travels often, owns 2 cars, shops weekly.</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="p-6">
-                    <div class="mb-6 bg-blue-50 p-4 rounded-br-xl rounded-tr-xl rounded-bl-xl inline-block max-w-[80%]">
-                        "I don't think I need the credit card or the upgrade. I already pay enough for gas and groceries as it is, I don't want another fee."
-                    </div>
-
-                    <div id="scenario-feedback" class="hidden mb-4 p-4 rounded bg-gray-100 text-sm"></div>
-
-                    <h4 class="text-sm font-bold text-gray-500 uppercase mb-3">Choose the best response:</h4>
-                    <div class="space-y-3">
-                        <button onclick="checkScenario(1)" class="w-full text-left p-4 rounded border border-gray-200 hover:bg-red-50 hover:border-red-300 transition group">
-                            <span class="font-bold text-red-600 group-hover:text-red-700 block mb-1">A. The "Annual Fee" Rebuttal</span>
-                            <span class="text-sm text-gray-600">"The card has no annual fee! And with Club+, you get free shipping on some items."</span>
-                        </button>
-                        <button onclick="checkScenario(2)" class="w-full text-left p-4 rounded border border-gray-200 hover:bg-green-50 hover:border-green-300 transition group">
-                            <span class="font-bold text-green-600 group-hover:text-green-700 block mb-1">B. The "Net-Negative" & Gas Math</span>
-                            <span class="text-sm text-gray-600">"I hear you. But since you drive a lot, the One+ card gives you 15¢ off every gallon. That saves about $230 a year, which pays for the membership and puts $100+ back in your pocket."</span>
-                        </button>
-                        <button onclick="checkScenario(3)" class="w-full text-left p-4 rounded border border-gray-200 hover:bg-red-50 hover:border-red-300 transition group">
-                            <span class="font-bold text-red-600 group-hover:text-red-700 block mb-1">C. The "Costco" Comparison</span>
-                            <span class="text-sm text-gray-600">"It's better than Costco because we have ExpressPay and our lines are shorter."</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Module Content: POS Simulator -->
-        <div id="pos" class="hidden fade-in space-y-6">
-            <button onclick="showDashboard()" class="text-gray-500 hover:text-red-600 mb-4"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>
-            <div class="flex justify-between items-center">
-                <h2 class="text-2xl font-bold text-gray-800">POS Simulator</h2>
-                <span id="pos-status" class="text-xs font-bold bg-gray-200 px-2 py-1 rounded">Step 1/4</span>
-            </div>
-
-            <div class="bg-gray-800 p-4 rounded-xl shadow-2xl">
-                <!-- Screen Bezel -->
-                <div class="pos-screen h-64 p-4 mb-4 relative flex flex-col justify-between">
-                    <!-- Screen Content -->
-                    <div id="pos-screen-content">
-                        <div class="bg-white p-2 mb-2 border border-gray-400 text-xs">
-                            MEMBER: 2114123456<br>
-                            DOE, JOHN
-                        </div>
-                        <div class="bg-blue-100 border-2 border-blue-500 p-2 text-center">
-                            <p class="font-bold text-blue-900 text-sm mb-1">OFFER CREDIT CARD TO MEMBER</p>
-                            <p class="text-xs mb-2">"Congratulations! You are pre-approved for the BJ's One+ Mastercard. Earn 5% back & 15¢ off gas."</p>
-                            <p class="font-bold text-xs">WOULD YOU LIKE TO APPLY?</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Bottom Bar -->
-                    <div class="bg-blue-800 text-white text-xs p-1 flex justify-between">
-                        <span>REG: 001</span>
-                        <span>OP: 1234</span>
-                    </div>
-                </div>
-
-                <!-- Keyboard -->
-                <div class="grid grid-cols-4 gap-2">
-                    <button class="pos-btn bg-gray-300 rounded p-3 font-bold text-gray-700" onclick="posAction('clear')">CLEAR</button>
-                    <button class="pos-btn bg-gray-300 rounded p-3 font-bold text-gray-700" onclick="posAction('total')">TOTAL</button>
-                    <button class="pos-btn bg-gray-300 rounded p-3 font-bold text-gray-700">7</button>
-                    <button class="pos-btn bg-gray-300 rounded p-3 font-bold text-gray-700">8</button>
-                    
-                    <button class="pos-btn bg-blue-600 rounded p-3 font-bold text-white col-span-2" onclick="posAction('1')">1 (YES)</button>
-                    <button class="pos-btn bg-gray-300 rounded p-3 font-bold text-gray-700">9</button>
-                    <button class="pos-btn bg-gray-300 rounded p-3 font-bold text-gray-700">4</button>
-                    
-                    <button class="pos-btn bg-red-600 rounded p-3 font-bold text-white col-span-2" onclick="posAction('2')">2 (NO)</button>
-                    <button class="pos-btn bg-gray-300 rounded p-3 font-bold text-gray-700">5</button>
-                    <button class="pos-btn bg-gray-300 rounded p-3 font-bold text-gray-700">6</button>
-
-                    <button class="pos-btn bg-green-600 rounded p-3 font-bold text-white col-span-2" onclick="posAction('enter')">ENTER</button>
-                    <button class="pos-btn bg-yellow-500 rounded p-3 font-bold text-white col-span-2" onclick="posAction('scan')">SCAN GUN</button>
-                </div>
-            </div>
-
-            <!-- Instruction Box -->
-            <div id="pos-instruction" class="bg-yellow-50 border-l-4 border-yellow-500 p-4">
-                <p class="font-bold text-yellow-800">Current Task:</p>
-                <p class="text-sm text-yellow-700">The screen has prompted a pre-approved offer. The member says "Sure, I'll try it." What do you press to start?</p>
-            </div>
-            
-            <!-- Hidden compliance check -->
-            <div id="compliance-check" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div class="bg-white p-6 rounded-lg max-w-sm w-full mx-4 shadow-2xl">
-                    <h3 class="text-xl font-bold text-red-600 mb-2"><i class="fas fa-exclamation-triangle"></i> Compliance Check</h3>
-                    <p class="mb-4 text-sm text-gray-600">Before the member accepts on the PinPad, what must you physically do?</p>
-                    <div class="space-y-2">
-                        <button onclick="resolveCompliance(true)" class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">Hand them the Credit Card Disclosures</button>
-                        <button onclick="resolveCompliance(false)" class="w-full bg-gray-200 text-gray-800 p-2 rounded hover:bg-gray-300">Tell them the APR verbally</button>
-                        <button onclick="resolveCompliance(false)" class="w-full bg-gray-200 text-gray-800 p-2 rounded hover:bg-gray-300">Ask for their Social Security Number</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <footer class="bg-gray-800 text-gray-400 py-6 text-center text-xs">
-        <p>BJ's Internal Training Tool | Fairfax Market | FY26 Metrics</p>
-        <p class="mt-1">Remember: 100% Satisfaction Guarantee</p>
-    </footer>
-
-    <script>
-        // Module Navigation
-        function showModule(moduleId) {
-            const modules = ['tiers', 'cards', 'scenarios', 'pos'];
-            document.getElementById('dashboard').classList.add('hidden');
-            modules.forEach(id => document.getElementById(id).classList.add('hidden'));
-            document.getElementById(moduleId).classList.remove('hidden');
-            window.scrollTo(0,0);
-        }
-
-        function showDashboard() {
-            const modules = ['tiers', 'cards', 'scenarios', 'pos'];
-            modules.forEach(id => document.getElementById(id).classList.add('hidden'));
-            document.getElementById('dashboard').classList.remove('hidden');
-            resetPOS(); // Reset POS state when leaving
-        }
-
-        // Scenario Logic
-        function checkScenario(choice) {
-            const feedbackEl = document.getElementById('scenario-feedback');
-            feedbackEl.classList.remove('hidden', 'bg-green-100', 'bg-red-100', 'text-green-800', 'text-red-800');
-            
-            if (choice === 2) {
-                feedbackEl.classList.add('bg-green-100', 'text-green-800');
-                feedbackEl.innerHTML = `<strong><i class="fas fa-check-circle"></i> Correct!</strong><br>For commuters in Fairfax, gas is the strongest hook. Focusing on the $230 annual savings makes the membership fee feel irrelevant (Net-Negative cost).`;
-            } else if (choice === 1) {
-                feedbackEl.classList.add('bg-red-100', 'text-red-800');
-                feedbackEl.innerHTML = `<strong><i class="fas fa-times-circle"></i> Good, but not best.</strong><br>While true, "No Annual Fee" is a passive benefit. Active savers (commuters) respond better to tangible dollar amounts like gas savings.`;
-            } else {
-                feedbackEl.classList.add('bg-red-100', 'text-red-800');
-                feedbackEl.innerHTML = `<strong><i class="fas fa-times-circle"></i> Avoid this.</strong><br>Don't bring up the competitor unless necessary. Focus on BJ's specific value proposition (Gas & 5% Back) first.`;
-            }
-        }
-
-        // POS Simulator Logic
-        let posStep = 1;
-
-        function posAction(key) {
-            const screen = document.getElementById('pos-screen-content');
-            const instruction = document.getElementById('pos-instruction');
-            const status = document.getElementById('pos-status');
-
-            if (posStep === 1 && key === '1') {
-                // Step 1: Accept Offer
-                posStep = 2;
-                screen.innerHTML = `
-                    <div class="bg-yellow-100 border border-yellow-500 p-2 text-center mt-4">
-                        <p class="font-bold text-gray-800">SCAN MEMBER STATE ID</p>
-                        <p class="text-xs">OR PRESS CLEAR</p>
-                    </div>
-                `;
-                instruction.innerHTML = `<p class="font-bold text-yellow-800">Step 2:</p><p class="text-sm text-yellow-700">The system needs to verify the member. What do you do now?</p>`;
-                status.innerText = "Step 2/4";
-            } else if (posStep === 2 && key === 'scan') {
-                // Step 2: Scan ID
-                // Trigger Compliance Check Modal
-                document.getElementById('compliance-check').classList.remove('hidden');
-            } else if (posStep === 4 && key === 'enter') {
-                // Step 4: Completion
-                screen.innerHTML = `
-                    <div class="bg-green-100 border border-green-500 p-2 text-center mt-4">
-                        <p class="font-bold text-green-800">APPLICATION APPROVED</p>
-                        <p class="text-xs">Provide CCD Pamphlet.</p>
-                        <p class="text-xs mt-2">Receipt Printing...</p>
-                    </div>
-                `;
-                instruction.innerHTML = `<p class="font-bold text-green-800">Success!</p><p class="text-sm text-green-700">You have successfully processed the application. Don't forget to mention the instant credit available for today's purchase!</p>`;
-                status.innerText = "Complete";
-            } else if (key === 'clear') {
-                resetPOS();
-            }
-        }
-
-        function resolveCompliance(isCorrect) {
-            if (isCorrect) {
-                document.getElementById('compliance-check').classList.add('hidden');
-                posStep = 4; // Skip to 4 to simulate pinpad interaction
-                const screen = document.getElementById('pos-screen-content');
-                const instruction = document.getElementById('pos-instruction');
-                const status = document.getElementById('pos-status');
-                
-                screen.innerHTML = `
-                    <div class="bg-blue-50 border border-blue-300 p-2 text-center mt-4">
-                        <p class="font-bold text-gray-800">WAITING FOR MEMBER...</p>
-                        <p class="text-xs">Member is accepting terms on PinPad...</p>
-                        <i class="fas fa-spinner fa-spin mt-2"></i>
-                    </div>
-                `;
-                instruction.innerHTML = `<p class="font-bold text-yellow-800">Step 3:</p><p class="text-sm text-yellow-700">The member has accepted on the PinPad. The register prompts '1 Enter' to finish.</p>`;
-                status.innerText = "Step 3/4";
-            } else {
-                alert("Incorrect. Compliance requires physically handing the disclosures brochure (CCD) before they accept.");
-            }
-        }
-
-        function resetPOS() {
-            posStep = 1;
-            document.getElementById('pos-status').innerText = "Step 1/4";
-            document.getElementById('pos-screen-content').innerHTML = `
-                <div class="bg-white p-2 mb-2 border border-gray-400 text-xs">
-                    MEMBER: 2114123456<br>
-                    DOE, JOHN
-                </div>
-                <div class="bg-blue-100 border-2 border-blue-500 p-2 text-center">
-                    <p class="font-bold text-blue-900 text-sm mb-1">OFFER CREDIT CARD TO MEMBER</p>
-                    <p class="text-xs mb-2">"Congratulations! You are pre-approved for the BJ's One+ Mastercard. Earn 5% back & 15¢ off gas."</p>
-                    <p class="font-bold text-xs">WOULD YOU LIKE TO APPLY?</p>
-                </div>
-            `;
-            document.getElementById('pos-instruction').innerHTML = `
-                <p class="font-bold text-yellow-800">Current Task:</p>
-                <p class="text-sm text-yellow-700">The screen has prompted a pre-approved offer. The member says "Sure, I'll try it." What do you press to start?</p>
-            `;
-            document.getElementById('compliance-check').classList.add('hidden');
-        }
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Simulator />);
     </script>
 </body>
 </html>
