@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BJ's Membership Mastery Simulator v2.1</title>
+    <title>BJ's Membership Mastery Simulator v2.2</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -58,6 +58,41 @@
                 }
             },
             {
+                id: "mem_m1",
+                mode: "membership",
+                difficulty: "Medium",
+                title: "The Paper Loyalist (Coupon Book)",
+                description: "Older member asking for the physical coupon book.",
+                customerName: "Arthur Miller",
+                memberId: "3399887711",
+                memberType: "Inner Circle",
+                marsData: {
+                    tier: "The Club Card",
+                    offers: ["App Download", "Upgrade"],
+                    hint: "Low digital engagement. Misses coupons often.",
+                    dates: { expiration: "06/30/2026", lastRenewal: "06/30/2025", enrollment: "1998" },
+                    sales: { ytd: "$1,800.00", lastYear: "$2,000.00", twelveMoTotal: "$3,800.00", twelveMoElig: "$3,800.00", currentMoElig: "$100.00" },
+                    rewards: { potential: "$190.00", upgradeFee: "$60.00" }
+                },
+                dialogueTree: {
+                    start: {
+                        npc: "I didn't get my coupon book in the mail this month. Do you have any behind the desk?",
+                        options: [
+                            { text: "Sorry, we stopped mailing them to everyone.", score: 0, next: "fail_service", feedback: "Too blunt. You need to offer a solution." },
+                            { text: "We might have one, but did you know the App now clips them automatically so you never forget them at home?", score: 10, next: "digital_pivot", feedback: "Great pivot to the 'Digital Shift' strategy." }
+                        ]
+                    },
+                    fail_service: { npc: "Well that's ridiculous. I want my coupons.", end: true, success: false, message: "Member left frustrated." },
+                    digital_pivot: {
+                        npc: "I'm not good with phones.",
+                        options: [
+                            { text: "I can set it up for you right now. It also lets you skip the checkout line entirely.", score: 10, next: "success_app", feedback: "Selling 'ExpressPay' and convenience drives digital adoption." }
+                        ]
+                    },
+                    success_app: { npc: "Skip the line? Okay, show me how.", end: true, success: true, message: "Success! Moved member to digital." }
+                }
+            },
+            {
                 id: "mem_h1",
                 mode: "membership",
                 difficulty: "Hard",
@@ -92,6 +127,41 @@
                     success_logic: { npc: "If it's guaranteed, I guess it makes sense.", end: true, success: true, tier: "Club+", message: "Success! You used logic to defeat emotion." }
                 }
             },
+            {
+                id: "mem_h2",
+                mode: "membership",
+                difficulty: "Hard",
+                title: "The Amazon Defector (Return)",
+                description: "Member returning a Ninja Coffee Maker.",
+                customerName: "David Wallace",
+                memberId: "3999887766",
+                memberType: "Inner Circle",
+                marsData: {
+                    tier: "The Club Card",
+                    offers: ["Cobrand"],
+                    hint: "Returning item due to price. Check if rewards would have beaten the competitor price.",
+                    dates: { expiration: "01/01/2026", lastRenewal: "01/01/2025", enrollment: "2020" },
+                    sales: { ytd: "$300.00", lastYear: "$6,000.00", twelveMoTotal: "$6,300.00", twelveMoElig: "$5,000.00", currentMoElig: "$0.00" },
+                    rewards: { potential: "$250.00", upgradeFee: "$60.00" }
+                },
+                dialogueTree: {
+                    start: {
+                        npc: "I'm returning this coffee maker. I saw it on Amazon for $10 less.",
+                        options: [
+                            { text: "Okay, do you have your receipt?", score: 2, next: "process_return", feedback: "Efficient, but you missed a retention opportunity." },
+                            { text: "We can definitely return that. But just so you know, with the BJ's One+ card, you would have earned 5% back on this, which is $15.", score: 10, next: "math_win", feedback: "Excellent. You showed that BJ's was actually $5 cheaper than Amazon effectively." }
+                        ]
+                    },
+                    process_return: { npc: "Here it is.", end: true, success: false, message: "Processed return, but validated their exit to Amazon." },
+                    math_win: {
+                        npc: "Wait, so it would have been cheaper here?",
+                        options: [
+                            { text: "Exactly. The card beats Amazon's price on almost all electronics. Want to apply and re-buy it?", score: 10, next: "save_sale", feedback: "Turning a return into a sale + credit app. Masterful." }
+                        ]
+                    },
+                    save_sale: { npc: "If I save money, sure. Let's do it.", end: true, success: true, message: "Success! Prevented 'Share of Wallet' loss to Amazon." }
+                }
+            },
 
             // ===========================
             // SELF-CHECKOUT (SCO) SCENARIOS
@@ -123,6 +193,35 @@
                         ]
                     },
                     success_sco: { npc: "That would be way easier. Show me how.", end: true, success: true, message: "Success! Helpful service led to sales." }
+                }
+            },
+            {
+                id: "sco_e2",
+                mode: "scoc",
+                difficulty: "Easy",
+                title: "The Lost Shopper (Wayfinding)",
+                description: "Member looking confused near the batteries.",
+                scoData: {
+                    items: ["(Empty Cart)"],
+                    behavior: "Wandering aimlessly near the front lanes.",
+                    hint: "Help them find the item, then pitch the 'Skip the Line' benefit."
+                },
+                dialogueTree: {
+                    start: {
+                        npc: "Where are the AA batteries? I just need one thing.",
+                        options: [
+                            { text: "Aisle 12, halfway down.", score: 5, next: "basic_help", feedback: "Helpful, but missed a digital engagement opportunity." },
+                            { text: "Aisle 12. And since you only have one item, if you scan it with the BJ's App, you can walk right out without waiting in this line.", score: 10, next: "express_pay", feedback: "Perfect use of 'ExpressPay' to solve friction." }
+                        ]
+                    },
+                    basic_help: { npc: "Thanks.", end: true, success: false, message: "Good service, no upsell." },
+                    express_pay: {
+                        npc: "I can skip the register?",
+                        options: [
+                            { text: "Yep! It's called ExpressPay. Download it while you walk to Aisle 12.", score: 10, next: "success_digital", feedback: "Driving app adoption is key for retention." }
+                        ]
+                    },
+                    success_digital: { npc: "I'll try that. I hate these lines.", end: true, success: true, message: "Success! Solved 'Checkout Anxiety'." }
                 }
             },
             {
@@ -188,6 +287,35 @@
                 }
             },
             {
+                id: "cash_m1",
+                mode: "cashier",
+                difficulty: "Medium",
+                title: "The Gas Inquiry",
+                description: "Member asks about gas station hours.",
+                cashierData: {
+                    items: ["Rotisserie Chicken", "Milk", "Bread"],
+                    total: "$18.50",
+                    hint: "Question about gas is a buying signal. Use the 'Fairfax Arbitrage' logic."
+                },
+                dialogueTree: {
+                    start: {
+                        npc: "Is the gas station still open? I need to fill up.",
+                        options: [
+                            { text: "Yes, it's open until 10pm.", score: 5, next: "basic_info", feedback: "You answered the question, but missed the sales hook." },
+                            { text: "It is. And if you have the One+ card, it's about 45 cents cheaper than the Shell across the street right now.", score: 10, next: "arbitrage_hook", feedback: "Brilliant. You pivoted from a logistics question to a value proposition." }
+                        ]
+                    },
+                    basic_info: { npc: "Thanks.", end: true, success: false, message: "Provided info, missed sale." },
+                    arbitrage_hook: {
+                        npc: "45 cents? The sign says it's only 20 cents cheaper.",
+                        options: [
+                            { text: "The sign is for everyone. The card takes another 15 cents off instantly. It's the cheapest gas in Fairfax.", score: 10, next: "success_gas", feedback: "Reinforced the 'Member Exclusivity' of the pricing." }
+                        ]
+                    },
+                    success_gas: { npc: "I drive a truck, so that helps. Sign me up.", end: true, success: true, message: "Success! Gas math wins again." }
+                }
+            },
+            {
                 id: "cash_h1",
                 mode: "cashier",
                 difficulty: "Hard",
@@ -214,6 +342,36 @@
                         ]
                     },
                     success_tv: { npc: "If I can pay it off now, I guess I'll take the $42 discount.", end: true, success: true, message: "Success! Overcame hard resistance." }
+                }
+            },
+            {
+                id: "cash_h2",
+                mode: "cashier",
+                difficulty: "Hard",
+                title: "The Double Dip (Event)",
+                description: "Buying furniture during Double Rewards week.",
+                cashierData: {
+                    items: ["Patio Set", "Fire Pit"],
+                    total: "$1,200.00",
+                    hint: "It is Double Rewards Week! 10% Back is in play.",
+                    event: "DOUBLE REWARDS ACTIVE"
+                },
+                dialogueTree: {
+                    start: {
+                        npc: "This patio set is expensive, but we need it.",
+                        options: [
+                            { text: "It's a great set. Want to open a card?", score: 2, next: "weak_pitch", feedback: "Too weak for a $1,200 purchase." },
+                            { text: "You picked the perfect week. It's Double Rewards week, so if you use the One+ card, you get $120 back on this instantly.", score: 10, next: "urgency_win", feedback: "Leveraged the 'Double Dip' event for massive value." }
+                        ]
+                    },
+                    weak_pitch: { npc: "I'll just pay with my Visa.", end: true, success: false, message: "Missed the event leverage." },
+                    urgency_win: {
+                        npc: "$120 back? Seriously?",
+                        options: [
+                            { text: "Yes, but only for this week. It basically pays for the fire pit.", score: 10, next: "success_big", feedback: "Framing the reward as a 'free item' (the fire pit) is excellent psychology." }
+                        ]
+                    },
+                    success_big: { npc: "Well I'm not leaving a free fire pit on the table.", end: true, success: true, message: "Success! High-ticket conversion." }
                 }
             }
         ];
@@ -316,6 +474,11 @@
                                 </tbody>
                             </table>
                         </div>
+                        {data.event && (
+                            <div className="bg-red-100 text-red-800 text-xs font-bold p-2 mb-2 text-center rounded border border-red-200 animate-pulse">
+                                ⚠ EVENT: {data.event}
+                            </div>
+                        )}
                         <div className="border-t-2 border-black pt-4">
                             <div className="flex justify-between items-end">
                                 <span className="text-xl font-bold text-gray-600">TOTAL</span>
@@ -364,21 +527,21 @@
                             <button onClick={() => onSelect('membership')} className="bg-white p-6 rounded-xl shadow-lg border-2 border-transparent hover:border-red-600 transition flex flex-col items-center text-center group">
                                 <div className="text-5xl mb-4">🖥️</div>
                                 <h2 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-red-600">Membership Desk</h2>
-                                <p className="text-sm text-gray-500">Access full MARS 2.0 data. Analyze spend history and upgrade tiers.</p>
+                                <p className="text-sm text-gray-500">Access full MARS 2.0 data. Handle Returns, Coupon complaints, and Upgrades.</p>
                             </button>
 
                             {/* Self-Checkout Mode */}
                             <button onClick={() => onSelect('scoc')} className="bg-white p-6 rounded-xl shadow-lg border-2 border-transparent hover:border-green-600 transition flex flex-col items-center text-center group">
                                 <div className="text-5xl mb-4">🤖</div>
                                 <h2 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-green-600">Self-Checkout</h2>
-                                <p className="text-sm text-gray-500">Visual scan only. No data. Act as an "Ambassador" to help then pivot.</p>
+                                <p className="text-sm text-gray-500">Visual scan only. Assist wayfinding, push Digital App, and Pivot to sales.</p>
                             </button>
 
                             {/* Cashier Mode */}
                             <button onClick={() => onSelect('cashier')} className="bg-white p-6 rounded-xl shadow-lg border-2 border-transparent hover:border-blue-600 transition flex flex-col items-center text-center group">
                                 <div className="text-5xl mb-4">🛒</div>
                                 <h2 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600">Cashier</h2>
-                                <p className="text-sm text-gray-500">Items & Total only. Use "10-Second Hooks" and "Round Numbers".</p>
+                                <p className="text-sm text-gray-500">Items & Total only. Use "10-Second Hooks", Event Promos, and Gas Math.</p>
                             </button>
                         </div>
                     </div>
@@ -396,11 +559,15 @@
                         <div className="grid gap-4">
                             <button onClick={() => onSelect('Easy')} className="p-4 bg-green-50 border border-green-200 rounded hover:bg-green-100 transition text-left">
                                 <h3 className="font-bold text-green-800 text-lg">Easy</h3>
-                                <p className="text-sm text-gray-600">Obvious cues. Gas complaints (Membership) or Diapers (SCO).</p>
+                                <p className="text-sm text-gray-600">Obvious cues. Gas complaints, simple wayfinding, small carts.</p>
+                            </button>
+                            <button onClick={() => onSelect('Medium')} className="p-4 bg-yellow-50 border border-yellow-200 rounded hover:bg-yellow-100 transition text-left">
+                                <h3 className="font-bold text-yellow-800 text-lg">Medium</h3>
+                                <p className="text-sm text-gray-600">Service pivots. Coupon book requests, Gas questions, Missing rewards.</p>
                             </button>
                             <button onClick={() => onSelect('Hard')} className="p-4 bg-red-50 border border-red-200 rounded hover:bg-red-100 transition text-left">
                                 <h3 className="font-bold text-red-800 text-lg">Hard</h3>
-                                <p className="text-sm text-gray-600">Resistant members. "I don't want another card" or Rush customers.</p>
+                                <p className="text-sm text-gray-600">Resistant members. Returns (Amazon), Fee objections, Rush customers.</p>
                             </button>
                         </div>
                     </div>
@@ -505,7 +672,6 @@
                     <div className="grid md:grid-cols-3 gap-6 md:h-[600px] h-auto">
                         
                         {/* LEFT COLUMN: CONTEXT DISPLAY (CHANGES BY MODE) */}
-                        {/* Removed h-full constraint on mobile to allow natural stacking height */}
                         <div className="md:col-span-1 md:h-full">
                             {selectedMode === 'membership' && <MarsScreen data={currentScenario.marsData} />}
                             {selectedMode === 'scoc' && <ScoDisplay data={currentScenario.scoData} />}
