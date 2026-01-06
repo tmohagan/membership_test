@@ -49,7 +49,7 @@
                     start: {
                         npc: "Ugh, I just spent $60 filling up my tank outside. Prices are crazy.",
                         options: [
-                            { text: "I know, it's terrible everywhere.", score: 0, next: "fail_passive", feedback: "Passive. You missed a direct cue to pitch the 15¢/gal savings." },
+                            { text: "I know, it's terrible everywhere.", score: 0, next: "fail_passive", feedback: "Passive. You missed a direct cue to pitch the 15¢/gal savings[cite: 33, 72]." },
                             { text: "Did you know you can save 15 cents a gallon instantly with the BJ's One+ Mastercard?", score: 10, next: "success_cobrand", feedback: "Perfect. Direct solution to the stated pain point." }
                         ]
                     },
@@ -79,14 +79,14 @@
                         npc: "I'm not paying $110 for a membership. $55 is already enough.",
                         options: [
                             { text: "But you get 2% back.", score: 5, next: "objection_math", feedback: "True, but not persuasive enough for a fee-averse person." },
-                            { text: "I understand. But looking at your spending, staying at the $55 level is actually costing you $100 a year in lost rewards.", score: 10, next: "math_breakdown", feedback: "Reframed the fee as a loss. Strong psychology (Loss Aversion)." }
+                            { text: "I understand. But looking at your spending, staying at the $55 level is actually costing you $100 a year in lost rewards.", score: 10, next: "math_breakdown", feedback: "Reframed the fee as a loss. Strong psychology (Loss Aversion)[cite: 106]." }
                         ]
                     },
                     objection_math: { npc: "I just don't like fees.", end: true, success: false, message: "Failed to overcome price objection." },
                     math_breakdown: {
                         npc: "How is it costing me money?",
                         options: [
-                            { text: "You spend $5,000/year. 2% of that is $100. You pay $55 to upgrade, you keep $45 profit.", score: 10, next: "success_logic", feedback: "Perfect 'Net-Negative' math." }
+                            { text: "You spend $5,000/year. 2% of that is $100. You pay $55 to upgrade, you keep $45 profit.", score: 10, next: "success_logic", feedback: "Perfect 'Net-Negative' math[cite: 106]." }
                         ]
                     },
                     success_logic: { npc: "If it's guaranteed, I guess it makes sense.", end: true, success: true, tier: "Club+", message: "Success! You used logic to defeat emotion." }
@@ -111,7 +111,7 @@
                     start: {
                         npc: "(Member struggling to scan the barcode on the heavy box)",
                         options: [
-                            { text: "Do you want to apply for a credit card?", score: 0, next: "fail_annoyed", feedback: "Terrible timing. You ignored their struggle." },
+                            { text: "Do you want to apply for a credit card?", score: 0, next: "fail_annoyed", feedback: "Terrible timing. You ignored their struggle[cite: 197]." },
                             { text: "Here, let me hit that with the hand scanner for you. By the way, did you know the app has a $3 coupon for these?", score: 10, next: "helpful_pivot", feedback: "Perfect. You acted as an 'SCO Ambassador'—help first, then pivot." }
                         ]
                     },
@@ -141,7 +141,7 @@
                         npc: "(Scanning rapidly, avoiding eye contact)",
                         options: [
                             { text: "Excuse me, are you a Club+ member?", score: 2, next: "ignore", feedback: "They are avoiding contact. This question is easy to ignore." },
-                            { text: "Just a heads up—scanning this big order here means you just missed out on about $8 in rewards.", score: 10, next: "stop_scan", feedback: "Excellent. You used 'Loss Aversion' to break their focus." }
+                            { text: "Just a heads up—scanning this big order here means you just missed out on about $8 in rewards.", score: 10, next: "stop_scan", feedback: "Excellent. You used 'Loss Aversion' to break their focus[cite: 200]." }
                         ]
                     },
                     ignore: { npc: "I'm good thanks.", end: true, success: false, message: "Member brushed you off." },
@@ -167,21 +167,21 @@
                 cashierData: {
                     items: ["Poland Spring Water (40pk)", "Cheez-Its (Bulk)", "Gatorade"],
                     total: "$42.50",
-                    hint: "Small cart means they aren't here for groceries. Pitch Gas."
+                    hint: "Small cart means they aren't here for groceries. Pitch Gas[cite: 140]."
                 },
                 dialogueTree: {
                     start: {
                         npc: "Just these for the office.",
                         options: [
-                            { text: "Do you want to apply for the BJ's Mastercard?", score: 0, next: "fail_reflex", feedback: "Too generic. Triggered 'Credit Card Resistance'." },
-                            { text: "Are you filling up gas here today?", score: 10, next: "gas_hook", feedback: "Perfect opener for small carts." }
+                            { text: "Do you want to apply for the BJ's Mastercard?", score: 0, next: "fail_reflex", feedback: "Too generic. Triggered 'Credit Card Resistance'[cite: 110]." },
+                            { text: "Are you filling up gas here today?", score: 10, next: "gas_hook", feedback: "Perfect opener for small carts[cite: 142]." }
                         ]
                     },
                     fail_reflex: { npc: "No thanks, I have enough cards.", end: true, success: false, message: "Triggered the automatic 'No'." },
                     gas_hook: {
                         npc: "Yeah, I was planning to.",
                         options: [
-                            { text: "The store card knocks another 15 cents off the price. It saves most members about $300 a year just on gas.", score: 10, next: "success_gas", feedback: "Strong use of 'Fairfax Gas Math'." }
+                            { text: "The store card knocks another 15 cents off the price. It saves most members about $300 a year just on gas.", score: 10, next: "success_gas", feedback: "Strong use of 'Fairfax Gas Math'[cite: 72, 143]." }
                         ]
                     },
                     success_gas: { npc: "15 cents? That's actually pretty good. Let's do it.", end: true, success: true, message: "Success! Sold the gas benefit." }
@@ -196,7 +196,7 @@
                 cashierData: {
                     items: ["LCD TV 65-inch", "Soundbar"],
                     total: "$850.00",
-                    hint: "High ticket item. Massive potential rewards, but member is resistant."
+                    hint: "High ticket item. Massive potential rewards, but member is resistant[cite: 151]."
                 },
                 dialogueTree: {
                     start: {
@@ -262,3 +262,309 @@
             return (
                 <div className="bg-gray-800 border-4 border-gray-600 rounded-xl overflow-hidden font-mono h-full flex flex-col">
                     <div className="bg-gray-900 text-white p-4 text-center border-b border-gray-700">
+                        <h2 className="text-2xl font-bold text-green-400 tracking-widest">SELF-CHECKOUT</h2>
+                        <p className="text-xs text-gray-400">VISUAL SCAN ONLY - NO CRM DATA</p>
+                    </div>
+                    <div className="flex-1 p-6 bg-black">
+                        <p className="text-gray-400 text-sm mb-4 border-b border-gray-700 pb-2">SCANNED ITEMS:</p>
+                        <ul className="space-y-3">
+                            {data.items.map((item, idx) => (
+                                <li key={idx} className="text-green-500 text-lg flex items-center gap-3">
+                                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                    {item}
+                                </li>
+                            ))}
+                        </ul>
+                        <div className="mt-8 p-4 bg-gray-800 rounded text-yellow-400 text-sm">
+                            <span className="font-bold block mb-1">OBSERVED BEHAVIOR:</span>
+                            {data.behavior}
+                        </div>
+                    </div>
+                     <div className="bg-blue-900 p-3 border-t border-blue-700">
+                         <p className="text-xs font-bold text-white uppercase mb-1">Ambassador Hint</p>
+                         <p className="text-sm text-blue-100 italic">{data.hint}</p>
+                    </div>
+                </div>
+            );
+        };
+
+        // 3. CASHIER DISPLAY (Cashier Mode)
+        const CashierDisplay = ({ data }) => {
+            if (!data) return null;
+            return (
+                <div className="bg-blue-100 border border-blue-300 rounded shadow-xl overflow-hidden font-sans h-full flex flex-col">
+                    <div className="bg-blue-800 text-white p-2 flex justify-between items-center">
+                        <span className="font-bold">REGISTER #04</span>
+                        <span className="text-xs bg-blue-900 px-2 py-1 rounded">CASHIER MODE</span>
+                    </div>
+                    <div className="flex-1 bg-white p-4 flex flex-col">
+                        <div className="flex-1 overflow-y-auto border border-gray-200 mb-4 p-2 bg-gray-50">
+                            <table className="w-full text-sm">
+                                <thead className="border-b">
+                                    <tr className="text-left text-gray-500">
+                                        <th className="pb-2">Item</th>
+                                        <th className="pb-2 text-right">Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {data.items.map((item, idx) => (
+                                        <tr key={idx} className="border-b border-gray-100">
+                                            <td className="py-2">{item}</td>
+                                            <td className="py-2 text-right text-gray-400">--</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="border-t-2 border-black pt-4">
+                            <div className="flex justify-between items-end">
+                                <span className="text-xl font-bold text-gray-600">TOTAL</span>
+                                <span className="text-4xl font-bold text-gray-900">{data.total}</span>
+                            </div>
+                        </div>
+                    </div>
+                     <div className="bg-yellow-50 p-3 border-t border-yellow-200">
+                         <p className="text-xs font-bold text-yellow-800 uppercase mb-1">Register Hint</p>
+                         <p className="text-sm text-gray-800 italic">{data.hint}</p>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- GAME CONTROLLERS ---
+
+        const FeedbackModal = ({ feedback, score, onNext, isEnd, success }) => {
+            const isGood = score >= 5;
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-lg p-6 max-w-lg w-full shadow-2xl animate-fade-in-up border-t-4 border-red-600">
+                        <h3 className={`text-xl font-bold mb-2 ${!isGood ? 'text-red-600' : 'text-green-600'}`}>
+                            {!isGood ? "Coach's Corner (Improvement Needed)" : "Great Job!"}
+                        </h3>
+                        <p className="text-gray-700 mb-6">{feedback}</p>
+                        <button 
+                            onClick={onNext}
+                            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200"
+                        >
+                            {isEnd ? (success ? "Next Scenario" : "Try Again") : "Continue Interaction"}
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        const ModeSelect = ({ onSelect }) => {
+            return (
+                <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
+                    <div className="max-w-4xl w-full">
+                        <h1 className="text-4xl font-bold text-center mb-8 bjs-red-text tracking-tighter">Select Training Module</h1>
+                        <div className="grid md:grid-cols-3 gap-6">
+                            
+                            {/* Membership Mode */}
+                            <button onClick={() => onSelect('membership')} className="bg-white p-6 rounded-xl shadow-lg border-2 border-transparent hover:border-red-600 transition flex flex-col items-center text-center group">
+                                <div className="text-5xl mb-4">🖥️</div>
+                                <h2 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-red-600">Membership Desk</h2>
+                                <p className="text-sm text-gray-500">Access full MARS 2.0 data. Analyze spend history and upgrade tiers.</p>
+                            </button>
+
+                            {/* Self-Checkout Mode */}
+                            <button onClick={() => onSelect('scoc')} className="bg-white p-6 rounded-xl shadow-lg border-2 border-transparent hover:border-green-600 transition flex flex-col items-center text-center group">
+                                <div className="text-5xl mb-4">🤖</div>
+                                <h2 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-green-600">Self-Checkout</h2>
+                                <p className="text-sm text-gray-500">Visual scan only. No data. Act as an "Ambassador" to help then pivot.</p>
+                            </button>
+
+                            {/* Cashier Mode */}
+                            <button onClick={() => onSelect('cashier')} className="bg-white p-6 rounded-xl shadow-lg border-2 border-transparent hover:border-blue-600 transition flex flex-col items-center text-center group">
+                                <div className="text-5xl mb-4">🛒</div>
+                                <h2 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600">Cashier</h2>
+                                <p className="text-sm text-gray-500">Items & Total only. Use "10-Second Hooks" and "Round Numbers".</p>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const DifficultySelect = ({ onSelect, mode }) => {
+            const modeName = mode === 'membership' ? "Membership" : mode === 'scoc' ? "Self-Checkout" : "Cashier";
+            return (
+                <div className="min-h-screen flex flex-col items-center justify-center p-4">
+                    <div className="bg-white p-8 rounded-xl shadow-2xl max-w-2xl w-full border-t-8 border-gray-800 text-center">
+                        <h2 className="text-2xl font-bold mb-2 text-gray-800">Select Difficulty</h2>
+                        <p className="text-gray-500 mb-6 uppercase text-sm font-bold tracking-widest">{modeName} Mode</p>
+                        <div className="grid gap-4">
+                            <button onClick={() => onSelect('Easy')} className="p-4 bg-green-50 border border-green-200 rounded hover:bg-green-100 transition text-left">
+                                <h3 className="font-bold text-green-800 text-lg">Easy</h3>
+                                <p className="text-sm text-gray-600">Obvious cues. Gas complaints (Membership) or Diapers (SCO).</p>
+                            </button>
+                            <button onClick={() => onSelect('Hard')} className="p-4 bg-red-50 border border-red-200 rounded hover:bg-red-100 transition text-left">
+                                <h3 className="font-bold text-red-800 text-lg">Hard</h3>
+                                <p className="text-sm text-gray-600">Resistant members. "I don't want another card" or Rush customers.</p>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const Simulator = () => {
+            const [gameState, setGameState] = useState('mode_select'); // mode_select, difficulty, playing, feedback, end_session
+            const [selectedMode, setSelectedMode] = useState(null);
+            const [sessionQueue, setSessionQueue] = useState([]);
+            const [currentScenarioIndex, setCurrentScenarioIndex] = useState(0);
+            
+            // Scenario State
+            const [dialogueId, setDialogueId] = useState('start');
+            const [feedbackState, setFeedbackState] = useState(null);
+            const [history, setHistory] = useState([]); 
+            const [sessionScore, setSessionScore] = useState(0);
+            const [sessionMaxScore, setSessionMaxScore] = useState(0);
+
+            const handleModeSelect = (mode) => {
+                setSelectedMode(mode);
+                setGameState('difficulty');
+            };
+
+            const startSession = (difficulty) => {
+                // Filter scenarios by BOTH Difficulty AND Mode
+                const pool = scenarioDatabase.filter(s => s.difficulty === difficulty && s.mode === selectedMode);
+                
+                if (pool.length === 0) {
+                    alert("No scenarios found for this configuration yet.");
+                    setGameState('mode_select');
+                    return;
+                }
+
+                const shuffled = [...pool].sort(() => 0.5 - Math.random());
+                setSessionQueue(shuffled);
+                setCurrentScenarioIndex(0);
+                setSessionScore(0);
+                setSessionMaxScore(shuffled.length * 20); 
+                
+                initScenario();
+                setGameState('playing');
+            };
+
+            const initScenario = () => {
+                setDialogueId('start');
+                setHistory([]);
+                setFeedbackState(null);
+            };
+
+            const handleChoice = (option) => {
+                const currentScenario = sessionQueue[currentScenarioIndex];
+                const currentDialogue = currentScenario.dialogueTree[dialogueId];
+                setHistory([...history, { type: 'npc', text: currentDialogue.npc }, { type: 'user', text: option.text }]);
+                setSessionScore(prev => prev + option.score);
+                setFeedbackState({ text: option.feedback, score: option.score, next: option.next });
+                setGameState('feedback');
+            };
+
+            const advanceDialogue = () => {
+                const currentScenario = sessionQueue[currentScenarioIndex];
+                const nextId = feedbackState.next;
+                const nextNode = currentScenario.dialogueTree[nextId];
+                
+                if (nextNode && nextNode.end) {
+                    if (currentScenarioIndex + 1 < sessionQueue.length) {
+                        setCurrentScenarioIndex(prev => prev + 1);
+                        initScenario();
+                        setGameState('playing');
+                    } else {
+                        // For simplicity, just reset to menu
+                        alert(`Session Complete! Score: ${sessionScore + feedbackState.score}`);
+                        setGameState('mode_select');
+                    }
+                } else {
+                    setDialogueId(nextId);
+                    setFeedbackState(null);
+                    setGameState('playing');
+                }
+            };
+
+            // -- RENDERING --
+
+            if (gameState === 'mode_select') return <ModeSelect onSelect={handleModeSelect} />;
+            if (gameState === 'difficulty') return <DifficultySelect onSelect={startSession} mode={selectedMode} />;
+
+            // PLAYING STATE
+            const currentScenario = sessionQueue[currentScenarioIndex];
+            const currentDialogue = currentScenario.dialogueTree[dialogueId];
+
+            return (
+                <div className="min-h-screen p-4 md:p-8 max-w-6xl mx-auto bg-gray-100">
+                    <div className="flex justify-between items-center mb-4">
+                        <div className="text-sm font-bold text-gray-500 uppercase tracking-widest">
+                            {selectedMode === 'membership' ? "Membership Desk" : selectedMode === 'scoc' ? "Self-Checkout Area" : "Register Lane"}
+                        </div>
+                        <button onClick={() => setGameState('mode_select')} className="text-xs text-red-600 underline">Exit Simulation</button>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-6 h-[600px]">
+                        {/* LEFT COLUMN: CONTEXT DISPLAY (CHANGES BY MODE) */}
+                        <div className="md:col-span-1 h-full">
+                            {selectedMode === 'membership' && <MarsScreen data={currentScenario.marsData} />}
+                            {selectedMode === 'scoc' && <ScoDisplay data={currentScenario.scoData} />}
+                            {selectedMode === 'cashier' && <CashierDisplay data={currentScenario.cashierData} />}
+                        </div>
+
+                        {/* RIGHT COLUMN: INTERACTION */}
+                        <div className="md:col-span-2 flex flex-col bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 h-full">
+                            {/* Chat History */}
+                            <div className="flex-1 overflow-y-auto p-6 bg-gray-50 space-y-4">
+                                {history.map((entry, idx) => (
+                                    <div key={idx} className={`flex ${entry.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                        <div className={`max-w-[80%] p-3 rounded-lg text-sm ${
+                                            entry.type === 'user' 
+                                            ? 'bg-red-600 text-white rounded-br-none' 
+                                            : 'bg-white border border-gray-300 text-gray-800 rounded-bl-none shadow-sm'
+                                        }`}>
+                                            {entry.text}
+                                        </div>
+                                    </div>
+                                ))}
+                                <div className="flex justify-start">
+                                    <div className="max-w-[80%] p-4 rounded-lg bg-white border border-gray-300 text-gray-800 rounded-bl-none shadow-md animate-fade-in text-base">
+                                        <span className="block text-xs text-gray-400 font-bold mb-1 uppercase">Customer</span>
+                                        {currentDialogue.npc}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Options */}
+                            <div className="p-6 bg-white border-t border-gray-200">
+                                <p className="text-xs font-bold text-gray-400 mb-3 uppercase tracking-wider">Select Your Response:</p>
+                                <div className="grid gap-3">
+                                    {currentDialogue.options.map((opt, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => handleChoice(opt)}
+                                            className="w-full text-left p-4 rounded border border-gray-200 hover:bg-red-50 hover:border-red-300 hover:text-red-700 transition duration-150 text-sm font-medium shadow-sm"
+                                        >
+                                            {opt.text}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {gameState === 'feedback' && feedbackState && (
+                        <FeedbackModal 
+                            feedback={feedbackState.text} 
+                            score={feedbackState.score}
+                            onNext={advanceDialogue}
+                            isEnd={currentScenario.dialogueTree[feedbackState.next]?.end}
+                            success={currentScenario.dialogueTree[feedbackState.next]?.success}
+                        />
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Simulator />);
+    </script>
+</body>
+</html>
