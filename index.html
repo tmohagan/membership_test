@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BJ's Membership Mastery Simulator</title>
+    <title>BJ's Membership Mastery Simulator v2.0</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -25,9 +25,12 @@
         // --- SCENARIO DATABASE ---
 
         const scenarioDatabase = [
-            // --- EASY SCENARIOS (Obvious Math / High Pain Points) ---
+            // ===========================
+            // MEMBERSHIP DESK SCENARIOS
+            // ===========================
             {
-                id: "e1",
+                id: "mem_e1",
+                mode: "membership",
                 difficulty: "Easy",
                 title: "The Gas Complainer",
                 description: "A member is vocal about high gas prices.",
@@ -38,7 +41,7 @@
                     tier: "The Club Card",
                     offers: ["Cobrand"],
                     hint: "High frequency visits, moderate spend. Complains about gas.",
-                    dates: { expiration: "03/31/2026", lastRenewal: "03/31/2025", enrollment: "04/12/2018", cardPrint: "04/12/2022", firstYear: false },
+                    dates: { expiration: "03/31/2026", lastRenewal: "03/31/2025", enrollment: "04/12/2018" },
                     sales: { ytd: "$1,200.00", lastYear: "$4,500.00", twelveMoTotal: "$4,800.00", twelveMoElig: "$3,200.00", currentMoElig: "$150.00" },
                     rewards: { potential: "$160.00", upgradeFee: "$60.00" }
                 },
@@ -55,204 +58,8 @@
                 }
             },
             {
-                id: "e2",
-                difficulty: "Easy",
-                title: "The Whale",
-                description: "A member with massive YTD spend on a basic card.",
-                customerName: "Robert Vance",
-                memberId: "35141774402",
-                memberType: "Primary Team Member",
-                marsData: {
-                    tier: "The Club Card",
-                    offers: ["Upgrade"],
-                    hint: "Look at 12 Mo Elig Sales ($7,500). He is losing money every transaction.",
-                    dates: { expiration: "05/31/2026", lastRenewal: "05/01/2025", enrollment: "01/15/2010", cardPrint: "05/01/2023", firstYear: false },
-                    sales: { ytd: "$3,500.00", lastYear: "$8,200.00", twelveMoTotal: "$9,100.00", twelveMoElig: "$7,500.00", currentMoElig: "$400.00" },
-                    rewards: { potential: "$375.00", upgradeFee: "$60.00" }
-                },
-                dialogueTree: {
-                    start: {
-                        npc: "Just ringing up this cart full of electronics and meat.",
-                        options: [
-                            { text: "Wow, big order. You really should be a Club+ member.", score: 5, next: "why", feedback: "Good start, but be more specific about the loss." },
-                            { text: "Mr. Vance, I see you've spent over $7,000 this year. You're leaving about $150 on the table by not having the Club+ card.", score: 10, next: "success_upgrade", feedback: "Excellent. Specific numbers create 'Loss Aversion'." }
-                        ]
-                    },
-                    why: {
-                        npc: "Why?",
-                        options: [
-                            { text: "You'd get 2% back. It pays for the upgrade fee instantly.", score: 10, next: "success_upgrade", feedback: "Correct logic." }
-                        ]
-                    },
-                    success_upgrade: { npc: "Leaving money on the table? I hate that. Upgrade me.", end: true, success: true, tier: "Club+", message: "Success! High spenders are the easiest upgrades if you do the math for them." }
-                }
-            },
-            {
-                id: "e3",
-                difficulty: "Easy",
-                title: "The Appliance Buyer",
-                description: "Member buying a $1,000 refrigerator.",
-                customerName: "Linda Wright",
-                memberId: "35998877112",
-                memberType: "Primary Team Member",
-                marsData: {
-                    tier: "The Club Card",
-                    offers: ["Upgrade", "Cobrand"],
-                    hint: "One transaction covers the upgrade fee immediately.",
-                    dates: { expiration: "12/31/2025", lastRenewal: "12/01/2024", enrollment: "06/20/2022", cardPrint: "06/20/2022", firstYear: false },
-                    sales: { ytd: "$200.00", lastYear: "$500.00", twelveMoTotal: "$700.00", twelveMoElig: "$700.00", currentMoElig: "$1,000.00" },
-                    rewards: { potential: "$50.00", upgradeFee: "$60.00" }
-                },
-                dialogueTree: {
-                    start: {
-                        npc: "I'm finally getting this new fridge.",
-                        options: [
-                            { text: "Nice choice. Do you want to apply for a credit card?", score: 2, next: "no_card", feedback: "Too generic. Link it to the specific purchase value." },
-                            { text: "Exciting! Since that's over $1,000, if you use the BJ's One+ Mastercard, you'd get $50 back in rewards instantly, plus a $40 bonus statement credit.", score: 10, next: "success_cobrand", feedback: "Perfect. You stacked the rewards (5%) + the Sign-up Bonus ($40) to show massive immediate savings." }
-                        ]
-                    },
-                    no_card: { npc: "No thanks, just the fridge.", end: true, success: false, message: "Missed the leverage of a big-ticket item." },
-                    success_cobrand: { npc: "Wait, so I get $90 off basically? Let's apply.", end: true, success: true, tier: "One+ Mastercard", message: "Big ticket items are prime Cobrand opportunities." }
-                }
-            },
-
-            // --- MEDIUM SCENARIOS (Lifestyle / Convenience / Mixed Benefits) ---
-            {
-                id: "m1",
-                difficulty: "Medium",
-                title: "The Harried Parent",
-                description: "Stressed parent with screaming kids buying diapers.",
-                customerName: "Emily Chen",
-                memberId: "35141552291",
-                memberType: "Primary Team Member",
-                marsData: {
-                    tier: "The Club Card",
-                    offers: ["Upgrade"],
-                    hint: "Spend is moderate, but the 'pain' is time/stress. Pitch Convenience.",
-                    dates: { expiration: "01/31/2026", lastRenewal: "01/15/2025", enrollment: "06/20/2021", cardPrint: "01/15/2025", firstYear: false },
-                    sales: { ytd: "$800.00", lastYear: "$2,200.00", twelveMoTotal: "$2,500.00", twelveMoElig: "$1,800.00", currentMoElig: "$120.00" },
-                    rewards: { potential: "$90.00", upgradeFee: "$60.00" }
-                },
-                dialogueTree: {
-                    start: {
-                        npc: "Can we hurry? My toddler is melting down.",
-                        options: [
-                            { text: "Sure, scanning fast!", score: 0, next: "fail_speed", feedback: "Polite, but missed the solution to their stress." },
-                            { text: "I see your hands are full! Did you know Club+ members get free curbside pickup and same-day delivery?", score: 10, next: "interest_convenience", feedback: "Perfect. You identified 'Time Poverty' as the friction point." }
-                        ]
-                    },
-                    fail_speed: { npc: "Thanks.", end: true, success: false, message: "Missed opportunity to sell the Convenience Premium." },
-                    interest_convenience: {
-                        npc: "Free delivery? I thought that was extra.",
-                        options: [
-                            { text: "It's included in Club+. It costs a little more now, but you'd never have to drag the kids out again.", score: 10, next: "success_upgrade", feedback: "Sold the lifestyle benefit." }
-                        ]
-                    },
-                    success_upgrade: { npc: "Sold. Anything to avoid this scene again.", end: true, success: true, tier: "Club+", message: "Success! You solved a lifestyle problem." }
-                }
-            },
-            {
-                id: "m2",
-                difficulty: "Medium",
-                title: "The Tire Buyer",
-                description: "Member asking about tire installation.",
-                customerName: "Mike Ross",
-                memberId: "38822110022",
-                memberType: "Primary Team Member",
-                marsData: {
-                    tier: "BJ's One Mastercard",
-                    offers: ["Upgrade"],
-                    hint: "Already has the basic credit card (3%). Needs to upgrade to One+ (5%) for the tire purchase.",
-                    dates: { expiration: "06/30/2026", lastRenewal: "06/30/2025", enrollment: "02/10/2019", cardPrint: "02/10/2019", firstYear: false },
-                    sales: { ytd: "$1,500.00", lastYear: "$3,000.00", twelveMoTotal: "$3,500.00", twelveMoElig: "$3,500.00", currentMoElig: "$0.00" },
-                    rewards: { potential: "$175.00", upgradeFee: "$60.00" }
-                },
-                dialogueTree: {
-                    start: {
-                        npc: "I need a set of 4 tires. That's going to be like $800.",
-                        options: [
-                            { text: "We have great prices on tires.", score: 0, next: "fail_generic", feedback: "Generic response." },
-                            { text: "I see you have the BJ's One card earning 3%. If you upgrade to One+, you'd earn 5% on these tires.", score: 10, next: "math_check", feedback: "Good recognition of current tier (One) vs target tier (One+)." }
-                        ]
-                    },
-                    fail_generic: { npc: "Yeah, I guess.", end: true, success: false, message: "Missed opportunity to upsell tier." },
-                    math_check: {
-                        npc: "Is it worth the fee?",
-                        options: [
-                            { text: "Definitely. 2% extra on $800 is $16. Plus gas savings.", score: 5, next: "soft_no", feedback: "The math is weak on just the tires ($16 isn't enticing enough). Pivot to total annual value." },
-                            { text: "The extra 2% plus the 15 cents/gal gas savings pays for it quickly. And it's risk-free with our Money-Back Guarantee.", score: 10, next: "success_upgrade", feedback: "Stronger pitch using total value and guarantee." }
-                        ]
-                    },
-                    soft_no: { npc: "I don't think $16 is worth the hassle.", end: true, success: false, message: "Failed to build enough value." },
-                    success_upgrade: { npc: "Okay, let's do the One+ upgrade.", end: true, success: true, tier: "One+", message: "Success! Upgraded from basic credit to premium credit." }
-                }
-            },
-            {
-                id: "m3",
-                difficulty: "Medium",
-                title: "The Renewal Hesitator",
-                description: "Member hesitating to renew at the register.",
-                customerName: "Jim Halpert",
-                memberId: "3322114455",
-                memberType: "Primary Team Member",
-                marsData: {
-                    tier: "The Club Card",
-                    offers: ["Upgrade"],
-                    hint: "Renewal due. Moderate spend ($2500).",
-                    dates: { expiration: "Today", lastRenewal: "1 Year Ago", enrollment: "2020", cardPrint: "2024", firstYear: false },
-                    sales: { ytd: "$2,500.00", lastYear: "$2,500.00", twelveMoTotal: "$5,000.00", twelveMoElig: "$5,000.00", currentMoElig: "$0.00" },
-                    rewards: { potential: "$100.00", upgradeFee: "$60.00" }
-                },
-                dialogueTree: {
-                    start: {
-                        npc: "It's asking me to renew for $55. I'm not sure if I shop enough.",
-                        options: [
-                            { text: "You can renew next time if you want.", score: 0, next: "fail_churn", feedback: "Never encourage churn/delay." },
-                            { text: "Actually, looking at your history, you spent $2,500 last year. If you had Club+, you would have earned $50 back, almost covering the fee.", score: 10, next: "logic_win", feedback: "Great use of 'Past Regret' (what they *would* have earned)." }
-                        ]
-                    },
-                    fail_churn: { npc: "Okay I'll wait.", end: true, success: false, message: "Member might not come back." },
-                    logic_win: { npc: "Really? I missed out on $50?", end: true, success: true, tier: "Club+", message: "Success! Used data to prove value." }
-                }
-            },
-
-            // --- HARD SCENARIOS (Competitors / Fee Objections / Complex Math) ---
-            {
-                id: "h1",
-                difficulty: "Hard",
-                title: "The Costco Loyalist",
-                description: "Member explicitly compares BJ's to Costco.",
-                customerName: "David Wallace",
-                memberId: "39988776655",
-                memberType: "Primary Team Member",
-                marsData: {
-                    tier: "The Club Card",
-                    offers: ["Cobrand"],
-                    hint: "Low spend here, likely high spend elsewhere. Need to pitch unique BJ's benefits (Coupons/ExpressPay).",
-                    dates: { expiration: "08/30/2025", lastRenewal: "08/30/2024", enrollment: "08/30/2023", cardPrint: "08/30/2023", firstYear: false },
-                    sales: { ytd: "$400.00", lastYear: "$500.00", twelveMoTotal: "$900.00", twelveMoElig: "$900.00", currentMoElig: "$100.00" },
-                    rewards: { potential: "$45.00", upgradeFee: "$60.00" }
-                },
-                dialogueTree: {
-                    start: {
-                        npc: "I usually go to Costco. Their gas lines are just too long today.",
-                        options: [
-                            { text: "Yeah, Costco is crazy.", score: 2, next: "fail_agree", feedback: "Don't just agree. Pivot to BJ's strengths." },
-                            { text: "I hear that a lot. That's actually why people switch to us. With our One+ Card, you get 15 cents off gas—which is usually better than their price—plus we take manufacturer coupons, which they don't.", score: 10, next: "interest_competitor", feedback: "Excellent. Used the 'Fairfax Rebuttal': Gas Savings + Coupon Stacking." }
-                        ]
-                    },
-                    fail_agree: { npc: "Anyway, here's my card.", end: true, success: false, message: "Missed chance to steal share of wallet." },
-                    interest_competitor: {
-                        npc: "I do like coupons. And the gas line here is shorter.",
-                        options: [
-                            { text: "Exactly. And with our App, you can scan items as you shop and skip the checkout line entirely. Can't do that across the street.", score: 10, next: "success_conversion", feedback: "The 'ExpressPay' friction argument. Very strong in the Fairfax market." }
-                        ]
-                    },
-                    success_conversion: { npc: "Skip the line? Okay, tell me more about the card.", end: true, success: true, tier: "One+ Mastercard", message: "Success! You leveraged competitor weakness (lines/convenience)." }
-                }
-            },
-            {
-                id: "h2",
+                id: "mem_h1",
+                mode: "membership",
                 difficulty: "Hard",
                 title: "The 'No Fees' Objector",
                 description: "Member strictly opposes paying for upgrades.",
@@ -261,9 +68,9 @@
                 memberType: "Primary Team Member",
                 marsData: {
                     tier: "The Club Card",
-                    offers: ["Upgrade", "Cobrand"],
+                    offers: ["Upgrade"],
                     hint: "High spend ($5k), but likely frugal. Needs 'Net Cost' logic.",
-                    dates: { expiration: "11/30/2025", lastRenewal: "11/30/2024", enrollment: "2015", cardPrint: "2020", firstYear: false },
+                    dates: { expiration: "11/30/2025", lastRenewal: "11/30/2024", enrollment: "2015" },
                     sales: { ytd: "$5,000.00", lastYear: "$5,000.00", twelveMoTotal: "$10,000.00", twelveMoElig: "$10,000.00", currentMoElig: "$200.00" },
                     rewards: { potential: "$500.00", upgradeFee: "$60.00" }
                 },
@@ -272,452 +79,186 @@
                         npc: "I'm not paying $110 for a membership. $55 is already enough.",
                         options: [
                             { text: "But you get 2% back.", score: 5, next: "objection_math", feedback: "True, but not persuasive enough for a fee-averse person." },
-                            { text: "I understand. But looking at your spending, staying at the $55 level is actually costing you $100 a year in lost rewards. The upgrade isn't a cost, it's a savings mechanism.", score: 10, next: "math_breakdown", feedback: "Reframed the fee as a loss. Strong psychology." }
+                            { text: "I understand. But looking at your spending, staying at the $55 level is actually costing you $100 a year in lost rewards.", score: 10, next: "math_breakdown", feedback: "Reframed the fee as a loss. Strong psychology (Loss Aversion)." }
                         ]
                     },
                     objection_math: { npc: "I just don't like fees.", end: true, success: false, message: "Failed to overcome price objection." },
                     math_breakdown: {
                         npc: "How is it costing me money?",
                         options: [
-                            { text: "You spend $5,000/year. 2% of that is $100. You pay $55 to upgrade, you keep $45 profit. Plus, 100% money-back guarantee if I'm wrong.", score: 10, next: "success_logic", feedback: "Perfect 'Net-Negative' math with Risk Reversal." }
+                            { text: "You spend $5,000/year. 2% of that is $100. You pay $55 to upgrade, you keep $45 profit.", score: 10, next: "success_logic", feedback: "Perfect 'Net-Negative' math." }
                         ]
                     },
                     success_logic: { npc: "If it's guaranteed, I guess it makes sense.", end: true, success: true, tier: "Club+", message: "Success! You used logic to defeat emotion." }
                 }
             },
+
+            // ===========================
+            // SELF-CHECKOUT (SCO) SCENARIOS
+            // ===========================
             {
-                id: "h3",
-                difficulty: "Hard",
-                title: "The Business Owner",
-                description: "Business member buying supplies.",
-                customerName: "Vance Refrigeration",
-                memberId: "37777777777",
-                memberType: "Business Primary",
-                marsData: {
-                    tier: "Business Club",
-                    offers: ["Upgrade"],
-                    hint: "Business spend is huge ($15k). Tax exempt? Resale?",
-                    dates: { expiration: "04/30/2026", lastRenewal: "04/30/2025", enrollment: "2018", cardPrint: "2023", firstYear: false },
-                    sales: { ytd: "$15,000.00", lastYear: "$20,000.00", twelveMoTotal: "$35,000.00", twelveMoElig: "$35,000.00", currentMoElig: "$1,200.00" },
-                    rewards: { potential: "$700.00", upgradeFee: "$60.00" }
+                id: "sco_e1",
+                mode: "scoc",
+                difficulty: "Easy",
+                title: "The Diaper Buyer",
+                description: "Young parent scanning bulk diapers at SCO.",
+                scoData: {
+                    items: ["Pampers Swaddlers (Bulk Box)", "Baby Wipes", "Formula"],
+                    behavior: "Struggling to scan big box",
+                    hint: "Use the 'Help First' approach. App has coupons for diapers."
                 },
                 dialogueTree: {
                     start: {
-                        npc: "Just grabbing supplies for the office.",
+                        npc: "(Member struggling to scan the barcode on the heavy box)",
                         options: [
-                            { text: "Do you have the Business Club+ card?", score: 5, next: "curious", feedback: "Okay opening." },
-                            { text: "With this volume ($15k), you are maxing out the value of a basic membership. Switching to Business Club+ would net you nearly $300 in rewards just on what you've bought this year.", score: 10, next: "biz_benefits", feedback: "Great use of high spend data." }
+                            { text: "Do you want to apply for a credit card?", score: 0, next: "fail_annoyed", feedback: "Terrible timing. You ignored their struggle." },
+                            { text: "Here, let me hit that with the hand scanner for you. By the way, did you know the app has a $3 coupon for these?", score: 10, next: "helpful_pivot", feedback: "Perfect. You acted as an 'SCO Ambassador'—help first, then pivot." }
                         ]
                     },
-                    curious: { npc: "No, what is it?", options: [{ text: "2% back.", score: 5, next: "biz_benefits", feedback: "Basic." }] },
-                    biz_benefits: {
-                        npc: "We watch overhead closely.",
+                    fail_annoyed: { npc: "Can you just let me pay? I'm busy.", end: true, success: false, message: "Failed to build rapport." },
+                    helpful_pivot: {
+                        npc: "Really? I didn't know that. Thanks!",
                         options: [
-                            { text: "This lowers your overhead. The rewards pay for next year's renewal and then some. It's pure profit for the business.", score: 10, next: "success_biz", feedback: "Speaking the language of a business owner (Overhead/Profit)." }
+                            { text: "No problem. If you upgrade to Club+, the machine deducts these coupons automatically next time.", score: 10, next: "success_sco", feedback: "Great transition to the value of the upgrade/app." }
                         ]
                     },
-                    success_biz: { npc: "Pure profit sounds good. Let's upgrade.", end: true, success: true, tier: "Business Club+", message: "Success! Business upgrades are high value." }
+                    success_sco: { npc: "That would be way easier. Show me how.", end: true, success: true, message: "Success! Helpful service led to sales." }
+                }
+            },
+            {
+                id: "sco_m1",
+                mode: "scoc",
+                difficulty: "Medium",
+                title: "The Big Cart at Self-Check",
+                description: "Member with a full cart using SCO to avoid human contact.",
+                scoData: {
+                    items: ["Ribeye Steaks", "Salmon Fillet", "Paper Towels", "Detergent", "Wine x6"],
+                    behavior: "Scanning quickly, focused.",
+                    hint: "High value cart. They are missing rewards."
+                },
+                dialogueTree: {
+                    start: {
+                        npc: "(Scanning rapidly, avoiding eye contact)",
+                        options: [
+                            { text: "Excuse me, are you a Club+ member?", score: 2, next: "ignore", feedback: "They are avoiding contact. This question is easy to ignore." },
+                            { text: "Just a heads up—scanning this big order here means you just missed out on about $8 in rewards.", score: 10, next: "stop_scan", feedback: "Excellent. You used 'Loss Aversion' to break their focus." }
+                        ]
+                    },
+                    ignore: { npc: "I'm good thanks.", end: true, success: false, message: "Member brushed you off." },
+                    stop_scan: {
+                        npc: "(Stops scanning) What do you mean missed out?",
+                        options: [
+                            { text: "Basic members don't earn on this. If you upgrade, the machine puts $8 back in your account for next time.", score: 10, next: "success_logic", feedback: "Simple math. Immediate result." }
+                        ]
+                    },
+                    success_logic: { npc: "Wait, $8? Okay, fix it.", end: true, success: true, message: "Success! Converted a self-service user." }
+                }
+            },
+
+            // ===========================
+            // CASHIER SCENARIOS
+            // ===========================
+            {
+                id: "cash_e1",
+                mode: "cashier",
+                difficulty: "Easy",
+                title: "The Water & Snacks Commuter",
+                description: "Member buying essentials. Likely a commuter.",
+                cashierData: {
+                    items: ["Poland Spring Water (40pk)", "Cheez-Its (Bulk)", "Gatorade"],
+                    total: "$42.50",
+                    hint: "Small cart means they aren't here for groceries. Pitch Gas."
+                },
+                dialogueTree: {
+                    start: {
+                        npc: "Just these for the office.",
+                        options: [
+                            { text: "Do you want to apply for the BJ's Mastercard?", score: 0, next: "fail_reflex", feedback: "Too generic. Triggered 'Credit Card Resistance'." },
+                            { text: "Are you filling up gas here today?", score: 10, next: "gas_hook", feedback: "Perfect opener for small carts." }
+                        ]
+                    },
+                    fail_reflex: { npc: "No thanks, I have enough cards.", end: true, success: false, message: "Triggered the automatic 'No'." },
+                    gas_hook: {
+                        npc: "Yeah, I was planning to.",
+                        options: [
+                            { text: "The store card knocks another 15 cents off the price. It saves most members about $300 a year just on gas.", score: 10, next: "success_gas", feedback: "Strong use of 'Fairfax Gas Math'." }
+                        ]
+                    },
+                    success_gas: { npc: "15 cents? That's actually pretty good. Let's do it.", end: true, success: true, message: "Success! Sold the gas benefit." }
+                }
+            },
+            {
+                id: "cash_h1",
+                mode: "cashier",
+                difficulty: "Hard",
+                title: "The 'Just a Credit Card' Objection",
+                description: "Member interrupts your pitch.",
+                cashierData: {
+                    items: ["LCD TV 65-inch", "Soundbar"],
+                    total: "$850.00",
+                    hint: "High ticket item. Massive potential rewards, but member is resistant."
+                },
+                dialogueTree: {
+                    start: {
+                        npc: "I'm in a rush, and I don't want another credit card.",
+                        options: [
+                            { text: "But you'd save 5%!", score: 5, next: "fail_shutdown", feedback: "They just said they don't want a card. You need to pivot methodology." },
+                            { text: "I totally get that. I don't treat it like a credit card either. I use it as a 'Gas & Grocery' card to get the 15¢ off gas.", score: 10, next: "pivot_perspective", feedback: "Brilliant. You validated their feeling and reframed the product." }
+                        ]
+                    },
+                    fail_shutdown: { npc: "I said no.", end: true, success: false, message: "Failed to respect the objection." },
+                    pivot_perspective: {
+                        npc: "A gas card?",
+                        options: [
+                            { text: "Exactly. Plus, for this TV, it would instantly knock $42 off the price. Pay it off at the register right now if you want.", score: 10, next: "success_tv", feedback: "Showed immediate value and removed the 'debt' fear." }
+                        ]
+                    },
+                    success_tv: { npc: "If I can pay it off now, I guess I'll take the $42 discount.", end: true, success: true, message: "Success! Overcame hard resistance." }
                 }
             }
         ];
 
         // --- COMPONENTS ---
 
+        // 1. MARS SCREEN (Membership Mode)
         const MarsScreen = ({ data }) => {
             if (!data) return null;
             return (
-                <div className="bg-white border border-gray-400 shadow-xl rounded-sm overflow-hidden font-sans text-sm">
-                    {/* Header - Black Bar */}
+                <div className="bg-white border border-gray-400 shadow-xl rounded-sm overflow-hidden font-sans text-sm h-full">
                     <div className="bg-black text-white p-2 flex justify-between items-center">
                         <div className="flex items-center gap-4">
                             <div className="bg-red-600 font-bold px-2 py-0.5 rounded text-lg italic tracking-tighter">BJ's</div>
                             <span className="font-light text-xl">MARS 2.0</span>
                         </div>
+                        <div className="text-xs text-gray-400">MEMBERSHIP MODE</div>
                     </div>
-
-                    {/* Breadcrumb / Title Bar */}
                     <div className="bg-white p-3 border-b border-gray-200">
-                        <div className="flex justify-between items-center mb-2">
-                            <h2 className="text-xl font-bold text-gray-800">
-                                {data.customerName} - {data.memberId}
-                                <span className="ml-3 text-xs font-normal bg-gray-100 text-gray-600 px-2 py-1 rounded-full">{data.memberType}</span>
-                            </h2>
-                            <div className="flex gap-2">
-                                {data.offers.includes("Cobrand") && <span className="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold">Offer: Cobrand</span>}
-                                {data.offers.includes("Upgrade") && <span className="bg-green-600 text-white px-3 py-1 rounded text-xs font-bold">Offer: Upgrade</span>}
-                            </div>
-                        </div>
+                        <h2 className="text-xl font-bold text-gray-800">{data.customerName}</h2>
+                        <p className="text-xs text-gray-500">ID: {data.memberId} | {data.memberType}</p>
                     </div>
-
-                    <div className="bg-gray-100 p-4">
-                        {/* Data Sections Stack - 1 Column Layout */}
-                        <div className="flex flex-col gap-4 mb-4">
-                            
-                            {/* Information Section */}
-                            <div className="bg-white p-0 rounded shadow-sm border border-gray-200">
-                                <div className="p-2 border-b border-gray-100 font-bold text-gray-700 bg-gray-50">Information</div>
-                                <div className="p-3">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <p className="text-xs text-gray-500">Tier</p>
-                                        <p className={`text-sm font-bold ${data.tier.includes('+') ? 'text-purple-700' : 'bjs-red-text'}`}>
-                                            {data.tier}
-                                        </p>
-                                    </div>
-                                    <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full inline-block mb-2">Active Member</span>
-                                    <div className="text-blue-600 text-xs hover:underline cursor-pointer">Add Free Supplemental ⓘ</div>
-                                </div>
+                    <div className="bg-gray-100 p-4 space-y-4">
+                        <div className="bg-white p-3 rounded shadow-sm border border-gray-200">
+                            <div className="flex justify-between items-center mb-2">
+                                <p className="text-xs text-gray-500">Tier</p>
+                                <p className={`text-sm font-bold ${data.tier.includes('+') ? 'text-purple-700' : 'bjs-red-text'}`}>{data.tier}</p>
                             </div>
-
-                            {/* Dates Section */}
-                            <div className="bg-white p-0 rounded shadow-sm border border-gray-200">
-                                <div className="p-2 border-b border-gray-100 font-bold text-gray-700 bg-gray-50">Dates</div>
-                                <div className="p-3 grid grid-cols-2 gap-y-1 gap-x-2 text-xs">
-                                    <div className="text-gray-500">Expiration</div>
-                                    <div className="text-right font-mono">{data.dates.expiration}</div>
-                                    
-                                    <div className="text-gray-500">Last Renewal</div>
-                                    <div className="text-right font-mono">{data.dates.lastRenewal}</div>
-                                    
-                                    <div className="text-gray-500">Enrollment</div>
-                                    <div className="text-right font-mono">{data.dates.enrollment}</div>
-                                    
-                                    <div className="text-gray-500">Card Print</div>
-                                    <div className="text-right font-mono">{data.dates.cardPrint}</div>
-                                    
-                                    <div className="text-gray-500">1st Year</div>
-                                    <div className="text-right">{data.dates.firstYear ? "Yes" : "No"}</div>
-                                </div>
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                                <div>YTD Sales: <span className="font-mono">{data.sales.ytd}</span></div>
+                                <div>Potential: <span className="font-mono font-bold text-green-700">{data.rewards.potential}</span></div>
                             </div>
-
-                            {/* Sales Section */}
-                            <div className="bg-white p-0 rounded shadow-sm border border-gray-200">
-                                <div className="p-2 border-b border-gray-100 font-bold text-gray-700 bg-gray-50">Sales</div>
-                                <div className="p-3 grid grid-cols-2 gap-y-1 gap-x-2 text-xs">
-                                    <div className="text-gray-500">YTD Sales</div>
-                                    <div className="text-right font-mono">{data.sales.ytd}</div>
-                                    
-                                    <div className="text-gray-500">Last Year</div>
-                                    <div className="text-right font-mono">{data.sales.lastYear}</div>
-                                    
-                                    <div className="text-gray-500">12 Mo Total</div>
-                                    <div className="text-right font-mono font-semibold">{data.sales.twelveMoTotal}</div>
-                                    
-                                    <div className="text-gray-500">12 Mo Elig</div>
-                                    <div className="text-right font-mono font-bold text-blue-800 bg-blue-50 px-1 rounded">{data.sales.twelveMoElig}</div>
-                                    
-                                    <div className="text-gray-500">Current Mo</div>
-                                    <div className="text-right font-mono">{data.sales.currentMoElig}</div>
-                                </div>
-                            </div>
-
-                            {/* Rewards Information Section */}
-                            <div className="bg-white p-0 rounded shadow-sm border border-gray-200">
-                                <div className="p-2 border-b border-gray-100 font-bold text-gray-700 bg-gray-50">Rewards Information</div>
-                                <div className="p-3 grid grid-cols-2 gap-y-1 gap-x-2 text-xs items-center">
-                                    <div className="text-gray-500">Potential Rewards (5%)</div>
-                                    <div className="text-right font-mono font-bold text-green-700 text-sm">{data.rewards.potential}</div>
-                                    
-                                    <div className="text-gray-500">Upgrade Fee</div>
-                                    <div className="text-right font-mono">{data.rewards.upgradeFee}</div>
-                                </div>
-                            </div>
-
                         </div>
-
-                        {/* Employee View / Hint - Bottom Full Width */}
-                        <div className="bg-white p-4 border border-gray-200 rounded shadow-sm">
-                            <div className="w-full">
-                                <p className="text-xs font-bold text-blue-700 uppercase mb-1">Scenario Hint</p>
-                                <p className="text-sm text-gray-800 italic">{data.hint}</p>
-                            </div>
+                        <div className="bg-blue-50 p-3 rounded border border-blue-200">
+                             <p className="text-xs font-bold text-blue-700 uppercase mb-1">System Hint</p>
+                             <p className="text-sm italic">{data.hint}</p>
                         </div>
                     </div>
                 </div>
             );
         };
 
-        const FeedbackModal = ({ feedback, score, onNext, isEnd, success }) => {
-            const isGood = score >= 5;
-            
+        // 2. SCO DISPLAY (Self-Checkout Mode)
+        const ScoDisplay = ({ data }) => {
+            if (!data) return null;
             return (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-lg w-full shadow-2xl animate-fade-in-up">
-                        <h3 className={`text-xl font-bold mb-2 ${!isGood ? 'text-red-600' : 'text-green-600'}`}>
-                            {!isGood ? "Coach's Corner (Improvement Needed)" : "Great Job!"}
-                        </h3>
-                        <p className="text-gray-700 mb-6">{feedback}</p>
-                        <button 
-                            onClick={onNext}
-                            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200"
-                        >
-                            {isEnd ? (success ? "Next Scenario" : "Try Again") : "Continue Interaction"}
-                        </button>
-                    </div>
-                </div>
-            );
-        };
-
-        const DifficultySelect = ({ onSelect }) => {
-            return (
-                <div className="min-h-screen flex flex-col items-center justify-center p-4">
-                    <div className="bg-white p-8 rounded-xl shadow-2xl max-w-2xl w-full border-t-8 border-red-600 text-center">
-                        <h2 className="text-3xl font-bold mb-6 text-gray-800">Select Difficulty</h2>
-                        <div className="grid gap-4">
-                            <button onClick={() => onSelect('Easy')} className="p-4 bg-green-50 border border-green-200 rounded hover:bg-green-100 transition text-left">
-                                <h3 className="font-bold text-green-800 text-lg">Easy</h3>
-                                <p className="text-sm text-gray-600">Obvious opportunities. High spenders with no rewards, gas complaints.</p>
-                            </button>
-                            <button onClick={() => onSelect('Medium')} className="p-4 bg-yellow-50 border border-yellow-200 rounded hover:bg-yellow-100 transition text-left">
-                                <h3 className="font-bold text-yellow-800 text-lg">Medium</h3>
-                                <p className="text-sm text-gray-600">Lifestyle needs. Tires, appliances, busy parents, renewal hesitation.</p>
-                            </button>
-                            <button onClick={() => onSelect('Hard')} className="p-4 bg-red-50 border border-red-200 rounded hover:bg-red-100 transition text-left">
-                                <h3 className="font-bold text-red-800 text-lg">Hard</h3>
-                                <p className="text-sm text-gray-600">Competitor loyalists (Costco), strict fee objectors, business complexity.</p>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const SessionSummary = ({ sessionScore, maxScore, history, onReset }) => {
-            const percentage = Math.round((sessionScore / maxScore) * 100);
-            let grade = "C";
-            if (percentage >= 90) grade = "A";
-            else if (percentage >= 80) grade = "B";
-            
-            return (
-                <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-100">
-                    <div className="bg-white p-8 rounded-xl shadow-xl max-w-2xl w-full text-center">
-                        <h1 className="text-3xl font-bold mb-4 bjs-red-text">Session Complete</h1>
-                        <div className="flex justify-center items-center gap-8 mb-8">
-                            <div className="text-center">
-                                <div className="text-5xl font-bold text-gray-800">{percentage}%</div>
-                                <div className="text-sm text-gray-500">Accuracy</div>
-                            </div>
-                            <div className="text-center">
-                                <div className={`text-6xl font-bold ${grade === 'A' ? 'text-green-600' : 'text-yellow-600'}`}>{grade}</div>
-                                <div className="text-sm text-gray-500">Grade</div>
-                            </div>
-                        </div>
-                        
-                        <div className="text-left mb-8 bg-gray-50 p-4 rounded h-64 overflow-y-auto">
-                            <h3 className="font-bold border-b mb-2 pb-1">Session History</h3>
-                            {history.map((item, idx) => (
-                                <div key={idx} className="mb-2 text-sm border-b border-gray-200 pb-2">
-                                    <span className={item.success ? "text-green-600 font-bold" : "text-red-600 font-bold"}>
-                                        {item.success ? "✓" : "✗"} {item.title}
-                                    </span>
-                                    <p className="text-gray-600 text-xs">{item.message}</p>
-                                </div>
-                            ))}
-                        </div>
-
-                        <button 
-                            onClick={onReset}
-                            className="bg-gray-800 text-white px-8 py-3 rounded-lg hover:bg-gray-900 transition font-bold shadow-lg"
-                        >
-                            Start New Session
-                        </button>
-                    </div>
-                </div>
-            );
-        };
-
-        const Simulator = () => {
-            const [gameState, setGameState] = useState('menu'); // menu, difficulty, playing, feedback, end_session
-            const [sessionQueue, setSessionQueue] = useState([]);
-            const [currentScenarioIndex, setCurrentScenarioIndex] = useState(0);
-            
-            // Scenario State
-            const [dialogueId, setDialogueId] = useState('start');
-            const [feedbackState, setFeedbackState] = useState(null);
-            const [history, setHistory] = useState([]); // Chat history for current scenario
-            
-            // Session Tracking
-            const [sessionScore, setSessionScore] = useState(0);
-            const [sessionMaxScore, setSessionMaxScore] = useState(0);
-            const [sessionHistory, setSessionHistory] = useState([]); // Summary of results
-
-            const startSession = (difficulty) => {
-                // Filter scenarios by difficulty
-                const pool = scenarioDatabase.filter(s => s.difficulty === difficulty);
-                
-                // Shuffle and pick 5 (or fewer if not enough exist)
-                const shuffled = [...pool].sort(() => 0.5 - Math.random());
-                const selected = shuffled.slice(0, 5);
-                
-                setSessionQueue(selected);
-                setCurrentScenarioIndex(0);
-                setSessionScore(0);
-                setSessionMaxScore(selected.length * 20); // Assuming 20 pts max per scenario
-                setSessionHistory([]);
-                
-                // Init first scenario
-                initScenario();
-                setGameState('playing');
-            };
-
-            const initScenario = () => {
-                setDialogueId('start');
-                setHistory([]);
-                setFeedbackState(null);
-            };
-
-            const handleChoice = (option) => {
-                const currentScenario = sessionQueue[currentScenarioIndex];
-                const currentDialogue = currentScenario.dialogueTree[dialogueId];
-                
-                // Add to chat history
-                setHistory([...history, { type: 'npc', text: currentDialogue.npc }, { type: 'user', text: option.text }]);
-                
-                // Update score
-                setSessionScore(prev => prev + option.score);
-
-                // Show feedback
-                setFeedbackState({
-                    text: option.feedback,
-                    score: option.score,
-                    next: option.next
-                });
-                setGameState('feedback');
-            };
-
-            const advanceDialogue = () => {
-                const currentScenario = sessionQueue[currentScenarioIndex];
-                const nextId = feedbackState.next;
-                const nextNode = currentScenario.dialogueTree[nextId];
-                
-                if (nextNode && nextNode.end) {
-                    // Scenario Finished
-                    const result = {
-                        title: currentScenario.title,
-                        success: nextNode.success,
-                        message: nextNode.message
-                    };
-                    setSessionHistory([...sessionHistory, result]);
-                    
-                    // Move to next scenario or end session
-                    if (currentScenarioIndex + 1 < sessionQueue.length) {
-                        setCurrentScenarioIndex(prev => prev + 1);
-                        initScenario();
-                        setGameState('playing');
-                    } else {
-                        setGameState('end_session');
-                    }
-                } else {
-                    setDialogueId(nextId);
-                    setFeedbackState(null);
-                    setGameState('playing');
-                }
-            };
-
-            // -- RENDER: MENU --
-            if (gameState === 'menu') {
-                return (
-                    <div className="min-h-screen flex flex-col items-center justify-center p-4">
-                        <div className="bg-white p-8 rounded-xl shadow-2xl max-w-2xl w-full border-t-8 border-red-600 text-center">
-                            <h1 className="text-4xl font-bold bjs-red-text mb-4 tracking-tighter">BJ's Membership Mastery</h1>
-                            <p className="text-gray-600 mb-8 text-lg">Practice your WOW pitch, handle objections, and master MARS 2.0 analysis.</p>
-                            <button 
-                                onClick={() => setGameState('difficulty')}
-                                className="bg-red-600 text-white px-8 py-3 rounded-full text-xl font-bold hover:bg-red-700 transition shadow-lg"
-                            >
-                                Start Simulation
-                            </button>
-                        </div>
-                    </div>
-                );
-            }
-
-            if (gameState === 'difficulty') {
-                return <DifficultySelect onSelect={startSession} />;
-            }
-
-            if (gameState === 'end_session') {
-                return <SessionSummary sessionScore={sessionScore} maxScore={sessionMaxScore} history={sessionHistory} onReset={() => setGameState('menu')} />;
-            }
-
-            // -- RENDER: PLAYING --
-            const currentScenario = sessionQueue[currentScenarioIndex];
-            const currentDialogue = currentScenario.dialogueTree[dialogueId];
-
-            return (
-                <div className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
-                    <div className="flex justify-between items-center mb-4">
-                        <div className="text-sm font-bold text-gray-500">
-                            Scenario {currentScenarioIndex + 1} of {sessionQueue.length}: {currentScenario.title}
-                        </div>
-                        <div className="text-xs bg-gray-200 px-2 py-1 rounded">Difficulty: {currentScenario.difficulty}</div>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-6">
-                        {/* Left Col: MARS System */}
-                        <div className="md:col-span-1">
-                            <MarsScreen data={currentScenario.marsData} />
-                        </div>
-
-                        {/* Right Col: Conversation */}
-                        <div className="md:col-span-2 flex flex-col h-[600px] bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
-                            
-                            {/* Chat History */}
-                            <div className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-4">
-                                {history.map((entry, idx) => (
-                                    <div key={idx} className={`flex ${entry.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                        <div className={`max-w-[80%] p-3 rounded-lg text-sm ${
-                                            entry.type === 'user' 
-                                            ? 'bg-red-600 text-white rounded-br-none' 
-                                            : 'bg-white border border-gray-300 text-gray-800 rounded-bl-none shadow-sm'
-                                        }`}>
-                                            {entry.text}
-                                        </div>
-                                    </div>
-                                ))}
-                                
-                                {/* Current NPC Line */}
-                                <div className="flex justify-start">
-                                    <div className="max-w-[80%] p-3 rounded-lg bg-white border border-gray-300 text-gray-800 rounded-bl-none shadow-sm animate-fade-in text-sm">
-                                        <span className="block text-xs text-gray-400 font-bold mb-1 uppercase">Member</span>
-                                        {currentDialogue.npc}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Options Area */}
-                            <div className="p-4 bg-white border-t border-gray-200">
-                                <p className="text-sm font-bold text-gray-500 mb-3 uppercase">Your Response:</p>
-                                <div className="space-y-2">
-                                    {currentDialogue.options.map((opt, idx) => (
-                                        <button
-                                            key={idx}
-                                            onClick={() => handleChoice(opt)}
-                                            className="w-full text-left p-3 rounded border border-gray-300 hover:bg-red-50 hover:border-red-300 hover:text-red-700 transition duration-150 text-sm"
-                                        >
-                                            {opt.text}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Feedback Modal Overlay */}
-                    {gameState === 'feedback' && feedbackState && (
-                        <FeedbackModal 
-                            feedback={feedbackState.text} 
-                            score={feedbackState.score}
-                            onNext={advanceDialogue}
-                            isEnd={currentScenario.dialogueTree[feedbackState.next]?.end}
-                            success={currentScenario.dialogueTree[feedbackState.next]?.success}
-                        />
-                    )}
-                </div>
-            );
-        };
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<Simulator />);
-    </script>
-</body>
-</html>
+                <div className="bg-gray-800 border-4 border-gray-600 rounded-xl overflow-hidden font-mono h-full flex flex-col">
+                    <div className="bg-gray-900 text-white p-4 text-center border-b border-gray-700">
