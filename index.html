@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BJ's Membership Mastery Simulator v2.0</title>
+    <title>BJ's Membership Mastery Simulator v2.1</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -49,7 +49,7 @@
                     start: {
                         npc: "Ugh, I just spent $60 filling up my tank outside. Prices are crazy.",
                         options: [
-                            { text: "I know, it's terrible everywhere.", score: 0, next: "fail_passive", feedback: "Passive. You missed a direct cue to pitch the 15¢/gal savings[cite: 33, 72]." },
+                            { text: "I know, it's terrible everywhere.", score: 0, next: "fail_passive", feedback: "Passive. You missed a direct cue to pitch the 15¢/gal savings." },
                             { text: "Did you know you can save 15 cents a gallon instantly with the BJ's One+ Mastercard?", score: 10, next: "success_cobrand", feedback: "Perfect. Direct solution to the stated pain point." }
                         ]
                     },
@@ -79,14 +79,14 @@
                         npc: "I'm not paying $110 for a membership. $55 is already enough.",
                         options: [
                             { text: "But you get 2% back.", score: 5, next: "objection_math", feedback: "True, but not persuasive enough for a fee-averse person." },
-                            { text: "I understand. But looking at your spending, staying at the $55 level is actually costing you $100 a year in lost rewards.", score: 10, next: "math_breakdown", feedback: "Reframed the fee as a loss. Strong psychology (Loss Aversion)[cite: 106]." }
+                            { text: "I understand. But looking at your spending, staying at the $55 level is actually costing you $100 a year in lost rewards.", score: 10, next: "math_breakdown", feedback: "Reframed the fee as a loss. Strong psychology (Loss Aversion)." }
                         ]
                     },
                     objection_math: { npc: "I just don't like fees.", end: true, success: false, message: "Failed to overcome price objection." },
                     math_breakdown: {
                         npc: "How is it costing me money?",
                         options: [
-                            { text: "You spend $5,000/year. 2% of that is $100. You pay $55 to upgrade, you keep $45 profit.", score: 10, next: "success_logic", feedback: "Perfect 'Net-Negative' math[cite: 106]." }
+                            { text: "You spend $5,000/year. 2% of that is $100. You pay $55 to upgrade, you keep $45 profit.", score: 10, next: "success_logic", feedback: "Perfect 'Net-Negative' math." }
                         ]
                     },
                     success_logic: { npc: "If it's guaranteed, I guess it makes sense.", end: true, success: true, tier: "Club+", message: "Success! You used logic to defeat emotion." }
@@ -111,7 +111,7 @@
                     start: {
                         npc: "(Member struggling to scan the barcode on the heavy box)",
                         options: [
-                            { text: "Do you want to apply for a credit card?", score: 0, next: "fail_annoyed", feedback: "Terrible timing. You ignored their struggle[cite: 197]." },
+                            { text: "Do you want to apply for a credit card?", score: 0, next: "fail_annoyed", feedback: "Terrible timing. You ignored their struggle." },
                             { text: "Here, let me hit that with the hand scanner for you. By the way, did you know the app has a $3 coupon for these?", score: 10, next: "helpful_pivot", feedback: "Perfect. You acted as an 'SCO Ambassador'—help first, then pivot." }
                         ]
                     },
@@ -141,7 +141,7 @@
                         npc: "(Scanning rapidly, avoiding eye contact)",
                         options: [
                             { text: "Excuse me, are you a Club+ member?", score: 2, next: "ignore", feedback: "They are avoiding contact. This question is easy to ignore." },
-                            { text: "Just a heads up—scanning this big order here means you just missed out on about $8 in rewards.", score: 10, next: "stop_scan", feedback: "Excellent. You used 'Loss Aversion' to break their focus[cite: 200]." }
+                            { text: "Just a heads up—scanning this big order here means you just missed out on about $8 in rewards.", score: 10, next: "stop_scan", feedback: "Excellent. You used 'Loss Aversion' to break their focus." }
                         ]
                     },
                     ignore: { npc: "I'm good thanks.", end: true, success: false, message: "Member brushed you off." },
@@ -167,21 +167,21 @@
                 cashierData: {
                     items: ["Poland Spring Water (40pk)", "Cheez-Its (Bulk)", "Gatorade"],
                     total: "$42.50",
-                    hint: "Small cart means they aren't here for groceries. Pitch Gas[cite: 140]."
+                    hint: "Small cart means they aren't here for groceries. Pitch Gas."
                 },
                 dialogueTree: {
                     start: {
                         npc: "Just these for the office.",
                         options: [
-                            { text: "Do you want to apply for the BJ's Mastercard?", score: 0, next: "fail_reflex", feedback: "Too generic. Triggered 'Credit Card Resistance'[cite: 110]." },
-                            { text: "Are you filling up gas here today?", score: 10, next: "gas_hook", feedback: "Perfect opener for small carts[cite: 142]." }
+                            { text: "Do you want to apply for the BJ's Mastercard?", score: 0, next: "fail_reflex", feedback: "Too generic. Triggered 'Credit Card Resistance'." },
+                            { text: "Are you filling up gas here today?", score: 10, next: "gas_hook", feedback: "Perfect opener for small carts." }
                         ]
                     },
                     fail_reflex: { npc: "No thanks, I have enough cards.", end: true, success: false, message: "Triggered the automatic 'No'." },
                     gas_hook: {
                         npc: "Yeah, I was planning to.",
                         options: [
-                            { text: "The store card knocks another 15 cents off the price. It saves most members about $300 a year just on gas.", score: 10, next: "success_gas", feedback: "Strong use of 'Fairfax Gas Math'[cite: 72, 143]." }
+                            { text: "The store card knocks another 15 cents off the price. It saves most members about $300 a year just on gas.", score: 10, next: "success_gas", feedback: "Strong use of 'Fairfax Gas Math'." }
                         ]
                     },
                     success_gas: { npc: "15 cents? That's actually pretty good. Let's do it.", end: true, success: true, message: "Success! Sold the gas benefit." }
@@ -196,7 +196,7 @@
                 cashierData: {
                     items: ["LCD TV 65-inch", "Soundbar"],
                     total: "$850.00",
-                    hint: "High ticket item. Massive potential rewards, but member is resistant[cite: 151]."
+                    hint: "High ticket item. Massive potential rewards, but member is resistant."
                 },
                 dialogueTree: {
                     start: {
@@ -501,16 +501,20 @@
                         <button onClick={() => setGameState('mode_select')} className="text-xs text-red-600 underline">Exit Simulation</button>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-6 h-[600px]">
+                    {/* UPDATED GRID CONTAINER: Removed fixed 600px height for mobile, kept for desktop */}
+                    <div className="grid md:grid-cols-3 gap-6 md:h-[600px] h-auto">
+                        
                         {/* LEFT COLUMN: CONTEXT DISPLAY (CHANGES BY MODE) */}
-                        <div className="md:col-span-1 h-full">
+                        {/* Removed h-full constraint on mobile to allow natural stacking height */}
+                        <div className="md:col-span-1 md:h-full">
                             {selectedMode === 'membership' && <MarsScreen data={currentScenario.marsData} />}
                             {selectedMode === 'scoc' && <ScoDisplay data={currentScenario.scoData} />}
                             {selectedMode === 'cashier' && <CashierDisplay data={currentScenario.cashierData} />}
                         </div>
 
                         {/* RIGHT COLUMN: INTERACTION */}
-                        <div className="md:col-span-2 flex flex-col bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 h-full">
+                        {/* Added fixed height of 500px specifically for MOBILE to ensure chat space, while Desktop remains fluid */}
+                        <div className="md:col-span-2 flex flex-col bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 h-[500px] md:h-full">
                             {/* Chat History */}
                             <div className="flex-1 overflow-y-auto p-6 bg-gray-50 space-y-4">
                                 {history.map((entry, idx) => (
