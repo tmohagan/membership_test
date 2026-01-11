@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BJ's Membership Mastery Simulator v2.2</title>
+    <title>BJ's Membership Mastery Simulator v2.3</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -93,6 +93,35 @@
                 }
             },
             {
+                id: "mem_m2",
+                mode: "membership",
+                difficulty: "Medium",
+                title: "The Reward Hoarder (Expiry Fear)",
+                description: "Member afraid rewards will expire if they upgrade.",
+                customerName: "Linda Belcher",
+                memberId: "3888221199",
+                memberType: "Inner Circle",
+                marsData: {
+                    tier: "The Club Card",
+                    offers: ["Upgrade"],
+                    hint: "Hesitant to upgrade. Thinks 'use it or lose it'.",
+                    dates: { expiration: "05/01/2026", lastRenewal: "05/01/2025", enrollment: "2010" },
+                    sales: { ytd: "$4,000.00", lastYear: "$4,200.00", twelveMoTotal: "$8,200.00", twelveMoElig: "$8,000.00", currentMoElig: "$300.00" },
+                    rewards: { potential: "$400.00", upgradeFee: "$60.00" }
+                },
+                dialogueTree: {
+                    start: {
+                        npc: "I don't shop every week. I don't want to pay $110 and then lose the rewards because I didn't use them in time.",
+                        options: [
+                            { text: "They last for a while.", score: 5, next: "vague_answer", feedback: "Too vague. Be specific about the policy." },
+                            { text: "The rewards actually never expire as long as you're a member. Think of it like a Christmas Fund. Let it build up all year.", score: 10, next: "success_savings", feedback: "Perfect 'Christmas Fund' analogy to remove fear." }
+                        ]
+                    },
+                    vague_answer: { npc: "I'd rather not risk it.", end: true, success: false, message: "Failed to remove the risk." },
+                    success_savings: { npc: "Oh, so I can save it for holiday shopping? That's smart.", end: true, success: true, tier: "Club+", message: "Success! Turned fear into a benefit." }
+                }
+            },
+            {
                 id: "mem_h1",
                 mode: "membership",
                 difficulty: "Hard",
@@ -160,6 +189,41 @@
                         ]
                     },
                     save_sale: { npc: "If I save money, sure. Let's do it.", end: true, success: true, message: "Success! Prevented 'Share of Wallet' loss to Amazon." }
+                }
+            },
+            {
+                id: "mem_h3",
+                mode: "membership",
+                difficulty: "Hard",
+                title: "The Small Business Owner",
+                description: "Business owner buying supplies.",
+                customerName: "Vance Refrigeration",
+                memberId: "37777777777",
+                memberType: "Business Primary",
+                marsData: {
+                    tier: "Business Club",
+                    offers: ["Upgrade"],
+                    hint: "Business spend is huge ($15k). Focus on Overhead reduction.",
+                    dates: { expiration: "04/30/2026", lastRenewal: "04/30/2025", enrollment: "2018" },
+                    sales: { ytd: "$15,000.00", lastYear: "$20,000.00", twelveMoTotal: "$35,000.00", twelveMoElig: "$35,000.00", currentMoElig: "$1,200.00" },
+                    rewards: { potential: "$700.00", upgradeFee: "$60.00" }
+                },
+                dialogueTree: {
+                    start: {
+                        npc: "Just grabbing supplies for the office.",
+                        options: [
+                            { text: "Switching to Business Club+ would lower your overhead by netting you nearly $300 in profit this year.", score: 10, next: "biz_benefits", feedback: "Great use of business language (Overhead/Profit)." },
+                            { text: "Do you want to get 2% back?", score: 5, next: "basic_pitch", feedback: "A bit too generic for a business owner." }
+                        ]
+                    },
+                    basic_pitch: { npc: "2% isn't much.", end: true, success: false, message: "Failed to show scale." },
+                    biz_benefits: {
+                        npc: "Lower overhead?",
+                        options: [
+                            { text: "Yes. The rewards pay for next year's renewal and then some. It's pure profit for the company.", score: 10, next: "success_biz", feedback: "Sold." }
+                        ]
+                    },
+                    success_biz: { npc: "Pure profit sounds good. Let's upgrade.", end: true, success: true, tier: "Business Club+", message: "Success! Business upgrades are high value." }
                 }
             },
 
@@ -253,6 +317,35 @@
                     success_logic: { npc: "Wait, $8? Okay, fix it.", end: true, success: true, message: "Success! Converted a self-service user." }
                 }
             },
+            {
+                id: "sco_h1",
+                mode: "scoc",
+                difficulty: "Hard",
+                title: "The Fuel Saver Stack",
+                description: "Member buying high-value Fuel Saver detergent.",
+                scoData: {
+                    items: ["Tide Pods (Fuel Saver Item)", "Downy", "Bleach"],
+                    behavior: "Scanning items that have Fuel Saver icons.",
+                    hint: "They are chasing gas savings. Teach them the 'Triple Stack'."
+                },
+                dialogueTree: {
+                    start: {
+                        npc: "(Scans Tide Pods)",
+                        options: [
+                            { text: "That Tide is a Fuel Saver item. You're getting 10 cents off gas just for that.", score: 5, next: "fuel_aware", feedback: "Good, but you didn't maximize the stack." },
+                            { text: "Nice pick on the Tide. Since that's a Fuel Saver, you can stack it with the Club+ card to get 30 cents off gas total.", score: 10, next: "stack_reveal", feedback: "Perfect. Explained the 'Stacking' concept." }
+                        ]
+                    },
+                    fuel_aware: { npc: "I know, that's why I bought it.", end: true, success: false, message: "Member already knew that." },
+                    stack_reveal: {
+                        npc: "Wait, they stack? I thought it was one or the other.",
+                        options: [
+                            { text: "They absolutely stack. 10¢ for the item, 5¢ for the membership, and 15¢ for the credit card. It adds up fast.", score: 10, next: "success_stack", feedback: "Clarified the rules to drive value." }
+                        ]
+                    },
+                    success_stack: { npc: "I didn't know I could combine them. I need that card.", end: true, success: true, message: "Success! Leveraged the Fuel Saver program." }
+                }
+            },
 
             // ===========================
             // CASHIER SCENARIOS
@@ -316,6 +409,35 @@
                 }
             },
             {
+                id: "cash_m2",
+                mode: "cashier",
+                difficulty: "Medium",
+                title: "The Sick Day (Delivery)",
+                description: "Member buying soup and medicine.",
+                cashierData: {
+                    items: ["Chicken Noodle Soup x8", "DayQuil/NyQuil Pack", "Tissues"],
+                    total: "$45.00",
+                    hint: "They are sick. Pitch the 'Free Same-Day Delivery' benefit.",
+                },
+                dialogueTree: {
+                    start: {
+                        npc: "(Coughing) Sorry, just trying to get in and out.",
+                        options: [
+                            { text: "No worries, I'll scan fast.", score: 5, next: "polite_only", feedback: "Polite, but missed the solution to their problem." },
+                            { text: "I'm sorry you're sick! Did you know Club+ comes with free Same-Day Delivery so we can bring this to your door next time?", score: 10, next: "delivery_hook", feedback: "Excellent value proposition for a sick member." }
+                        ]
+                    },
+                    polite_only: { npc: "Thanks.", end: true, success: false, message: "Missed value add." },
+                    delivery_hook: {
+                        npc: "Free delivery? I thought that was extra.",
+                        options: [
+                            { text: "It usually is, but the upgrade covers two free emergency deliveries a year. It pays for itself in one sick day.", score: 10, next: "success_delivery", feedback: "Valuation is spot on." }
+                        ]
+                    },
+                    success_delivery: { npc: "That's actually worth it. I'd pay anything to be in bed right now.", end: true, success: true, message: "Success! Sold on Convenience/Health." }
+                }
+            },
+            {
                 id: "cash_h1",
                 mode: "cashier",
                 difficulty: "Hard",
@@ -372,6 +494,35 @@
                         ]
                     },
                     success_big: { npc: "Well I'm not leaving a free fire pit on the table.", end: true, success: true, message: "Success! High-ticket conversion." }
+                }
+            },
+            {
+                id: "cash_h3",
+                mode: "cashier",
+                difficulty: "Hard",
+                title: "The Inflation Complainer",
+                description: "Member complaining about high food prices.",
+                cashierData: {
+                    items: ["Eggs", "Milk", "Butter", "Ground Beef"],
+                    total: "$65.00",
+                    hint: "Use the 'Inflation Shield' argument.",
+                },
+                dialogueTree: {
+                    start: {
+                        npc: "I can't believe how much eggs cost these days. It's ridiculous.",
+                        options: [
+                            { text: "I know, prices are up everywhere.", score: 0, next: "commiserate_only", feedback: "You agreed, but you offered no solution." },
+                            { text: "It is crazy. That's why I tell people the 5% card is the only way to beat it. It basically rolls the prices back to 2023 levels.", score: 10, next: "inflation_hook", feedback: "Strong 'Inflation Shield' positioning." }
+                        ]
+                    },
+                    commiserate_only: { npc: "It's getting too expensive to shop.", end: true, success: false, message: "Missed opportunity to solve the pain." },
+                    inflation_hook: {
+                        npc: "Rolls back prices?",
+                        options: [
+                            { text: "Getting 5% back on every single grocery run essentially negates the inflation. It's how our savvy members are staying ahead.", score: 10, next: "success_inflation", feedback: "Appealing to the 'Savvy Shopper' identity." }
+                        ]
+                    },
+                    success_inflation: { npc: "I like the sound of beating the prices. Let's do it.", end: true, success: true, message: "Success! Sold on economy." }
                 }
             }
         ];
